@@ -1,0 +1,5 @@
+[19-Sep-2023 08:14:48 UTC] PHP Fatal error:  Cannot declare class App\Models\Model because the name is already in use in /home/bgj1prokhm5f/public_html/orood/app/Models/Model.php on line 9
+[19-Sep-2023 08:15:12 UTC] PHP Fatal error:  Cannot declare class App\Models\Model because the name is already in use in /home/bgj1prokhm5f/public_html/orood/app/Models/Model.php on line 9
+[19-Sep-2023 08:18:14 UTC] PHP Fatal error:  Cannot declare class App\Models\Model because the name is already in use in /home/bgj1prokhm5f/public_html/orood/app/Models/Model.php on line 9
+[19-Sep-2023 08:18:48 UTC] PHP Fatal error:  Cannot declare class App\Models\Model because the name is already in use in /home/bgj1prokhm5f/public_html/orood/app/Models/Model.php on line 9
+[10-Dec-2023 02:40:39 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.1.0". You are running 7.3.33. in /home/tjlcuuyk/public_html/admin/vendor/composer/platform_check.php on line 24
