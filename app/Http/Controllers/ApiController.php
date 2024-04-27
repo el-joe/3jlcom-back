@@ -306,6 +306,26 @@ class ApiController extends Controller
                     $customer->mobile = ($request->mobile) ? $request->mobile : '';
                 }
 
+                if (isset($request->instagram_link)) {
+                    $customer->instagram_link = ($request->instagram_link) ? $request->instagram_link : '';
+                }
+
+
+                if (isset($request->twitter_link)) {
+                    $customer->twitter_link = ($request->twitter_link) ? $request->twitter_link : '';
+                }
+
+
+                if (isset($request->facebook_link)) {
+                    $customer->facebook_link = ($request->facebook_link) ? $request->facebook_link : '';
+                }
+
+
+                if (isset($request->pinterest_link)) {
+                    $customer->pinterest_link = ($request->pinterest_link) ? $request->pinterest_link : '';
+                }
+
+
                 if (isset($request->fcm_id)) {
                     $token_exist = Usertokens::where('fcm_id', $request->fcm_id)->get();
                     if (!count($token_exist)) {

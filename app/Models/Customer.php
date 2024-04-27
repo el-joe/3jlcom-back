@@ -28,8 +28,12 @@ class Customer extends Authenticatable implements JWTSubject
         'fcm_id',
         'logintype',
         'isActive',
+        'pinterest_link',
+        'twitter_link',
+        'facebook_link',
+        'instagram_link',
     ];
-    
+
     protected $casts = [
         'isActive' => 'bool',
         'isVerified' => 'bool',
@@ -65,36 +69,36 @@ class Customer extends Authenticatable implements JWTSubject
             'customer_id' => $this->id
         ];
     }
-    
+
     public function user_purchased_package()
     {
         return  $this->morphMany(UserPurchasedPackage::class, 'modal');
     }
-    
+
     // public function user_package(){
     //     return $
     // }
-    
+
     public function getCustomerTotalPostAttribute()
     {
         return Property::where('added_by', (string)$this->id)->get()->count();
     }
-    
+
     public function favourite()
     {
         return $this->hasMany(Favourite::class, 'user_id');
     }
-    
+
     public function property()
     {
         return $this->hasMany(Property::class, 'added_by');
     }
-    
+
     public function getProfileAttribute($image)
     {
         return $image != '' ? url('') . config('global.IMG_PATH') . config('global.USER_IMG_PATH') . $image : '';
     }
-    
+
     public function usertokens()
     {
         return $this->hasMany(Usertokens::class, 'customer_id');
