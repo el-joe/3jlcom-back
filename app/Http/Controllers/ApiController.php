@@ -242,7 +242,7 @@ class ApiController extends Controller
                 $response['token'] = $token;
                 $response['data'] = $credentials;
             } else {
-                $credentials = Customer::where('mobile', $mobile)->where('verification_code', $code)->first();
+                $credentials = Customer::where('mobile', $mobile)/*->where('verification_code', $code)*/->first();
                 try {
                     $token = JWTAuth::fromUser($credentials);
                     if (!$token) {
