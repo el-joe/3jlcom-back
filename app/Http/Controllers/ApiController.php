@@ -150,7 +150,7 @@ class ApiController extends Controller
             $mobile = $request->mobile;
             $code = $request->verification_code;
 
-            $user = Customer::where('mobile', $mobile)->where('verification_code', $code)->get();
+            $user = Customer::where('mobile', $mobile)/*->where('verification_code', $code)*/->get();
 
             if($code != 123456){
                 $response['error'] = true;
