@@ -35,6 +35,7 @@ class SettingController extends Controller
         ]);
 
         $type1 = $request->type;
+
         if ($type1 != '') {
             $message = Setting::where('type', $type1)->first();
             if (empty($message)) {
@@ -68,6 +69,7 @@ class SettingController extends Controller
                 true
             );
         }
+
         foreach ($input as $key => $value) {
 
             if ($key == 'favicon_icon') {

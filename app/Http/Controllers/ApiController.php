@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Manufacturer;
 use App\Models\Modell;
 use App\Models\Year;
+use App\Models\Metadata;
 use App\Models\City;
 use App\Models\Area;
 use App\Models\Customer;
@@ -49,6 +50,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 use kornrunner\Blurhash\Blurhash;
 use App\Libraries\Paypal;
 use App\Libraries\Paypal_pro;
+use Illuminate\Support\Facades\Cache;
 use Tymon\JWTAuth\Claims\Issuer;
 
 class ApiController extends Controller
@@ -2940,16 +2942,22 @@ class ApiController extends Controller
         return response()->json($response);
     }
 
+    public $paypal;
+
     public function paypal(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'package_id' => 'required',
-            'amount' => 'required'
+            'amount' => 'required',
+            'user_id'=>'required|exists:customers,id'
         ]);
 
+        $this->paypal = Setting::where('type','LIKE','%paypal%')->get();
+
+        $token = $this->generatePaypalToken();
+
         if (!$validator->fails()) {
-            $payload = JWTAuth::getPayload($this->bearerToken($request));
-            $current_user = (string)($payload['customer_id']);
+            $current_user = (string)($request['user_id']);
             $paypal = new Paypal();
             $returnURL = url('api/app_payment_status');
             $cancelURL = url('api/app_payment_status');
@@ -2977,6 +2985,100 @@ class ApiController extends Controller
             $response['error'] = true;
             $response['message'] = "Please fill all data and Submit";
         }
+    }
+
+    function generatePaypalToken(){
+        $curl = curl_init();
+
+        if($this->paypal->where('type','paypal_mode')->first()->data == 'test'){
+            $url = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
+        }else{
+            $url = 'https://api-m.paypal.com/v1/oauth2/token';
+        }
+
+        $user = $this->paypal->where('type','paypal_client_id')->first()->data;
+        $password = $this->paypal->where('type','paypal_secret_key')->first()->data;
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/x-www-form-urlencoded',
+            'Authorization: Basic '. base64_encode("$user:$password")
+        ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        return json_decode($response)->access_token;
+    }
+
+    function generatePaypalRedirectUrl($data){
+
+        if($this->paypal->where('type','paypal_mode')->first()->data == 'test'){
+            $url = 'https://api-m.sandbox.paypal.com';
+        }else{
+            $url = 'https://api-m.paypal.com';
+        }
+
+        $refId = $data['ref_id'];
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => $url . '/v2/checkout/orders',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>'{
+        "intent": "CAPTURE",
+        "purchase_units": [
+            {
+            "reference_id": "'.$refId.'",
+            "amount": {
+                "currency_code": "USD",
+                "value": "100.00"
+            }
+            }
+        ],
+        "payment_source": {
+            "paypal": {
+            "experience_context": {
+                "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
+                "brand_name": "EXAMPLE INC",
+                "locale": "en-US",
+                "landing_page": "LOGIN",
+                "shipping_preference": "NO_SHIPPING",
+                "user_action": "PAY_NOW",
+                "return_url": "https://example.com/returnUrl",
+                "cancel_url": "https://example.com/cancelUrl"
+            }
+            }
+        }
+        }',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            'PayPal-Request-Id: 7b92603e-77ed-4896-8e78-5dea2050476a',
+            'Authorization: Bearer A21AAIM-967h1FrGaWHToaabTTFp4naiNTLja7z-YoxYxRKPk0LVfaPl_Dmhh2i2gyBKXDX9SAEshKLPafyKj9c4iz8i0nw2A'
+        ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
     }
 
     public function app_payment_status(Request $request)
@@ -3252,116 +3354,124 @@ class ApiController extends Controller
         return response()->json($response);
     }
 
-    public function createPaymentIntent(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
+    function generatePaymentUrl(Request $request) {
 
+        $validator = Validator::make($request->all(), [
             'package_id' => 'required',
         ]);
+
         if ($validator->fails()) {
             return response()->json([
                 'error' => true,
                 'message' => $validator->errors()->first(),
             ], 400);
         }
-        try {
-            $limit = isset($request->limit) ? $request->limit : 10;
-            $payload = JWTAuth::getPayload($this->bearerToken($request));
 
-            $secret_key = system_setting('stripe_secret_key');
-            $current_user = (string)($payload['customer_id']);
+        $payload = JWTAuth::getPayload($this->bearerToken($request));
 
-            $stripe_currency = system_setting('stripe_currency');
-            $package = Package::find($request->package_id);
+        $metaDataSuccess = $this->stripeMetadata([
+            'customer_id'=>$payload['customer_id'],
+            'package_id'=>$request->package_id,
+            'status'=>'success'
+        ]);
 
-            $data = [
-                'amount' => (int)($package['price']),
-                'currency' => $stripe_currency,
-                'description' => $request->description,
+        $metaDataCancel = $this->stripeMetadata([
+            'customer_id'=>$payload['customer_id'],
+            'package_id'=>$request->package_id,
+            'status'=>'cancel'
+        ]);
 
+        $stripe_currency = system_setting('stripe_currency');
+        $package = Package::find($request->package_id);
 
-                'payment_method_types[]' => $request->payment_method,
-                'metadata' => [
-                    'userId' => $current_user,
-                    'packageId' => $request->package_id,
-                ],
-                'shipping' => [
-                    'name' => $request['shipping']['name'], // Replace with the actual name
-                    'address' => [
-                        'line1' => !empty($request['shipping']['address']['line1'])?$request['shipping']['address']['line1']:'',
-                         'line2' => !empty($request['shipping']['address']['line2'])?$request['shipping']['address']['line2']:'',
-                        'postal_code' => !empty($request['shipping']['address']['postal_code'])?$request['shipping']['address']['postal_code']:'',
-                        'city' => !empty($request['shipping']['address']['city'])?$request['shipping']['address']['city']:'',
-                         'state' => !empty($request['shipping']['address']['state'])?$request['shipping']['address']['state']:'',
-                        'country' => !empty($request['shipping']['address']['country'])?$request['shipping']['address']['country']:'',
+        $stripe = new \Stripe\StripeClient(system_setting('stripe_secret_key'));
+
+        $checkout = $stripe->checkout->sessions->create([
+            'success_url' => url('api/stripe/status?d='.$metaDataSuccess),
+            'cancel_url'  => url('api/stripe/status?d='.$metaDataCancel),
+            'line_items' => [
+                [
+                    'price_data' => [
+                        'currency' => $stripe_currency,
+                        'unit_amount' => $package['price']*100,
+                        'product_data' => ['name' => $package->name],
                     ],
+                    'quantity' => 1,
                 ],
-            ];
-            $headers = [
-                'Authorization' => 'Bearer ' . $secret_key,
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            ];
-            $response = Http::withHeaders($headers)->asForm()->post('https://api.stripe.com/v1/payment_intents', $data);
-            $responseData = $response->json();
-            return response()->json([
-                'data' => $responseData,
-                'message' => 'Intent created.',
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'An error occurred while processing the payment.',
-            ], 500);
+            ],
+            'mode' => 'payment',
+        ]);
+
+        Metadata::create([
+            'key'=>$this->stripeMetadata([
+                'customer_id'=>$payload['customer_id'],
+                'package_id'=>$request->package_id
+            ]),
+            'value'=>$checkout
+        ]);
+
+        return $checkout->url;
+    }
+
+    function stripeStatus(Request $request){
+        $data = json_decode(base64_decode($request->d), true);
+
+        $key = $this->stripeMetadata([
+            'customer_id'=>$data['customer_id'],
+            'package_id'=>$data['package_id']
+        ]);
+
+        $metaData = Metadata::where('key',$key)->first();
+
+        if($data['status'] == 'success'){
+            $user_id = $data['customer_id'];
+            $package_id = $data['package_id'];
+
+            $payment = Payments::whereTransactionId($metaData->value['id'])->first();
+            if(!$payment){
+                $payment = new Payments();
+            }
+            $payment->transaction_id = $metaData->value['id'];
+            $payment->amount = $metaData->value['amount_total']/100;
+            $payment->package_id = $package_id;
+            $payment->customer_id = $user_id;
+            $payment->status = 1;
+            $payment->payment_gateway = "stripe";
+            $payment->save();
+            $start_date =  Carbon::now();
+
+            $user = Customer::find($user_id);
+            $package = Package::find($package_id);
+            $data_exists = UserPurchasedPackage::where('modal_id', $user_id)->get();
+            if ($data_exists) {
+                UserPurchasedPackage::where('modal_id', $user_id)->delete();
+            }
+            if ($package) {
+                $user_package = new UserPurchasedPackage();
+                $user_package->modal()->associate($user);
+                $user_package->package_id = $package_id;
+                $user_package->start_date = $start_date;
+                $user_package->end_date = $package->duration != 0 ? Carbon::now()->addDays($package->duration) : NULL;
+                $user_package->save();
+                // if ($data_exists) {
+                //       UserPurchasedPackage::where('modal_id', $user_id)->where('package_id','!=',$user_package->id)->delete();
+                //      }
+                $user->subscription = 1;
+                $user->save();
+            }
+
+            // $user->package_id = $data['package_id'];
+            // $user->package_end_date = Carbon::now()->addDays($package->days);
+
+
+            return redirect()->to('https://3jlcom.com/payment-success');
+        }else{
+            return redirect()->to('https://3jlcom.com/payment-error');
         }
     }
 
-    public function confirmPayment(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'paymentIntentId' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => true,
-                'message' => $validator->errors()->first(),
-            ], 400);
-        }
-        try {
-
-            $secret_key = system_setting('stripe_secret_key');
-            $headers = [
-                'Authorization' => 'Bearer ' . $secret_key,
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            ];
-            $response = Http::withHeaders($headers)
-                ->get("https://api.stripe.com/v1/payment_intents/{$request->paymentIntentId}");
-            $responseData = $response->json();
-            $statusOfTransaction = $responseData['status'];
-            if ($statusOfTransaction == 'succeeded') {
-                return response()->json([
-                    'message' => 'Transaction successful',
-                    'success' => true,
-                    'status' => $statusOfTransaction,
-                ]);
-            } elseif ($statusOfTransaction == 'pending' || $statusOfTransaction == 'captured') {
-                return response()->json([
-                    'message' => 'Transaction pending',
-                    'success' => true,
-                    'status' => $statusOfTransaction,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Transaction failed',
-                    'success' => false,
-                    'status' => $statusOfTransaction,
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'An error occurred while processing the payment.',
-            ], 500);
-        }
+    function stripeMetadata($data) {
+        return base64_encode(json_encode($data));
     }
 
     public function delete_property(Request $request)

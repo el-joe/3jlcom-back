@@ -19,6 +19,7 @@
         "php-webdriver/webdriver": "*",
         "razorpay/razorpay": "*",
         "spatie/image": "*",
+        "stripe/stripe-php": "^14.5",
         "sunra/php-simple-html-dom-parser": "*",
         "symfony/dom-crawler": "*",
         "tymon/jwt-auth": "*",

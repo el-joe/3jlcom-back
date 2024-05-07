@@ -103,13 +103,13 @@
                         </div>
                     </div>
             </div>
-            
+
             <div class="card mt-2">
                 <div class="card-body">
                     <div class="divider">
                         <h6 class="divider-text">{{ __('Paypal Setting') }}</h6>
                     </div>
-                    
+
                     <div class="form-group row mt-2">
                         <label class="col-sm-2 form-check-label">{{ __('Paypal Business ID') }}</label>
                         <div class="col-sm-4">
@@ -118,7 +118,7 @@
                                 value="{{ system_setting('paypal_business_id') != '' ? system_setting('paypal_business_id') : '' }}"
                                 required="">
                         </div>
-    
+
                         <label class="col-sm-2 form-check-label">{{ __('Paypal Webhook URL') }}</label>
                         <div class="col-sm-4">
                             <input name="paypal_webhook_url" type="text" class="form-control"
@@ -126,11 +126,11 @@
                                 value="{{ system_setting('paypal_webhook_url') != '' ? system_setting('paypal_webhook_url') : url('/webhook/paypal') }}"
                                 required="">
                         </div>
-                        
+
                         <label class="col-sm-2 form-check-label mt-3">{{ __('Sandbox Mode') }}</label>
                         <div class="col-sm-2 col-md-4 col-xs-12 mt-3">
                             <div class="form-check form-switch">
-        
+
                                 <input type="hidden" name="sandbox_mode" id="sandbox_mode"
                                     value="{{ system_setting('sandbox_mode') != '' ? system_setting('sandbox_mode') : 0 }}">
                                 <input class="form-check-input" type="checkbox" role="switch" {{
@@ -138,7 +138,7 @@
                                 <label class="form-check-label" for="switch_sandbox_mode"></label>
                             </div>
                         </div>
-                        
+
                         <label class="col-sm-2 form-check-label mt-3">{{ __('Enable/Disable') }}</label>
                         <div class="col-sm-2 col-md-4 col-xs-12 mt-3">
                             <div class="form-check form-switch">
@@ -146,16 +146,16 @@
                                     value="{{ system_setting('paypal_gateway') != '' ? system_setting('paypal_gateway') : 0 }}">
                                 <input class="form-check-input" type="checkbox" role="switch" class="switch-input" name='op'
                                     {{ system_setting('paypal_gateway')=='1' ? 'checked' : '' }} id="switch_paypal_gateway">
-                                <label class="form-check-label" for="switch_paypal_gateway" id='lbl_paypal'> 
+                                <label class="form-check-label" for="switch_paypal_gateway" id='lbl_paypal'>
                                     {{ system_setting('paypal_gateway') != '' ? (system_setting('paypal_gateway') == 0 ? 'Disable' : 'Enable') : __('Disable') }}</label>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="divider pt-3">
                         <h6 class="divider-text">{{ __('Stripe Setting') }}</h6>
                     </div>
-                    
+
                     <div class="form-group row">
                         <label class="col-sm-2 form-check-label  mt-3">{{ __('Stripe publishable key') }}</label>
                         <div class="col-sm-4 mt-3">
@@ -172,29 +172,29 @@
                                 required="">
                         </div>
                         <label class="col-sm-2 form-check-label  mt-3">{{ __('Stripe Currency Symbol') }}</label>
-    
+
                         <div class="col-sm-4 mt-3">
-    
+
                             <select name="stripe_currency" id="stripe_currency" class="select2 form-select form-control-sm">
                                 @foreach ($stripe_currencies as $value)
                                 <option value={{ $value }}
-                                    selected="{{ system_setting('stripe_currency') == $value ? 'true' : '' }}">
+                                    {{ system_setting('stripe_currency') == $value ? 'selected' : '' }}>
                                     {{ $value }}</option>
                                 @endforeach
                             </select>
                         </div>
-    
+
                         <label class="col-sm-2 form-check-label  mt-3" id='lbl_stripe'>{{ system_setting('stripe_gateway')
                             != '' ? (system_setting('stripe_gateway') == 0 ? 'Disable' : 'Enable') : 'Disable' }}</label>
                         <div class="col-sm-2 col-md-4 col-xs-12  mt-3">
-    
+
                             <div class="form-check form-switch ">
-    
+
                                 <input type="hidden" name="stripe_gateway" id="stripe_gateway"
                                     value="{{ system_setting('stripe_gateway') != '' ? system_setting('stripe_gateway') : 0 }}">
                                 <input class="form-check-input" type="checkbox" role="switch" class="switch-input" name='op'
                                     {{ system_setting('stripe_gateway')=='1' ? 'checked' : '' }} id="switch_stripe_gateway">
-    
+
                             </div>
                         </div>
                         <label class="col-sm-2 form-check-label  mt-3">{{ __('Stripe Secret key') }}</label>
@@ -206,15 +206,15 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="card mt-2">
                 <div class="card-body">
-                    
+
                     <div class="divider">
                         <h6 class="divider-text">{{ __('More Setting') }}</h6>
 
                     </div>
-                    
+
                     <div class="form-group row mt-3">
 
                         <label class="col-sm-2 form-check-label ">{{ __('Default Language') }}</label>
@@ -308,7 +308,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group row mt-3">
                         <label class="col-sm-2 form-check-label">{{ __('Require Ads Approval') }}</label>
                         <div class="col-sm-4">
@@ -336,10 +336,10 @@
 
                 </div>
             </div>
-            
+
             <div class="card mt-2">
                 <div class="card-body">
-                    
+
                     <div class="divider">
                         <h6 class="divider-text">{{ __('Notification FCM Key') }}</h6>
                     </div>
@@ -371,11 +371,11 @@
         $(document).on('click', '#favicon_icon', function(e) {
             $('.favicon_icon').hide();
         });
-        
+
         $(document).on('click', '#company_logo', function(e) {
             $('.company_logo').hide();
         });
-        
+
         $(document).on('click', '#login_image', function(e) {
             $('.login_image').hide();
         });
@@ -412,7 +412,7 @@
                             $("#switch_paystack_gateway").is(':checked') ? $("#lbl_paystack").text(
                                     "Enable") : $("#lbl_paystack")
                                 .text("Disable");
-                                
+
                             $("#switch_paystack_gateway").is(':checked') ? $("#paystack_gateway")
                                 .val(1) : $("#paystack_gateway")
                                 .val(0);
@@ -420,7 +420,7 @@
                             $("#switch_stripe_gateway").is(':checked') ? $("#lbl_stripe").text(
                                     "Enable") : $("#lbl_stripe")
                                 .text("Disable");
-                                
+
                             $("#switch_stripe_gateway").is(':checked') ? $("#stripe_gateway")
                                 .val(1) : $("#stripe_gateway")
                                 .val(0);
@@ -434,33 +434,33 @@
             $("#switch_maintenance_mode").is(':checked') ? $("#maintenance_mode").val(1) : $("#maintenance_mode")
                 .val(0);
         });
-        
+
         $("#switch_force_update").on('change', function() {
             $("#switch_force_update").is(':checked') ? $("#force_update").val(1) : $("#force_update")
                 .val(0);
         });
-        
+
         $("#switch_require_approval").on('change', function() {
             $("#switch_require_approval").is(':checked') ? $("#require_approval").val(1) : $("#require_approval")
                 .val(0);
         });
-        
+
         $("#switch_require_caysh_approval").on('change', function() {
             $("#switch_require_caysh_approval").is(':checked') ? $("#require_caysh_approval").val(1) : $("#require_caysh_approval")
                 .val(0);
         });
-        
+
         $("#switch_number_with_suffix").on('change', function() {
             $("#switch_number_with_suffix").is(':checked') ? $("#number_with_suffix").val(1) : $(
                     "#number_with_suffix")
                 .val(0);
         });
-        
+
         $("#switch_sandbox_mode").on('change', function() {
             $("#switch_sandbox_mode").is(':checked') ? $("#sandbox_mode").val(1) : $("#sandbox_mode")
                 .val(0);
         });
-        
+
         $("#switch_paypal_gateway").on('change', function() {
 
             $("#switch_paypal_gateway").is(':checked') ? $("#paypal_gateway").val(1) : $("#paypal_gateway")
@@ -469,7 +469,7 @@
             $("#switch_paypal_gateway").is(':checked') ? $("#lbl_paypal").text("Disable") : $("#lbl_paypal")
                 .text("Enable");
         });
-        
+
         $("#switch_razorpay_gateway").on('change', function() {
 
             $("#switch_razorpay_gateway").is(':checked') ? $("#razorpay_gateway").val(1) : $("#razorpay_gateway")

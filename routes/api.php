@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('stripe/status', [ApiController::class, 'stripeStatus']);
+
 // Artisan::call('migrate');
 Route::get('get_system_settings', [ApiController::class, 'get_system_settings']);
 Route::post('user_signup', [ApiController::class, 'user_signup']);
@@ -78,8 +80,11 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('add_reports', [ApiController::class, 'add_reports']);
 
     Route::post('user_purchase_package', [ApiController::class, 'user_purchase_package']);
-    Route::post('createPaymentIntent', [ApiController::class, 'createPaymentIntent']);
-    Route::post('confirmPayment', [ApiController::class, 'confirmPayment']);
+    // Route::post('createPaymentIntent', [ApiController::class, 'createPaymentIntent']);
+    // Route::post('confirmPayment', [ApiController::class, 'confirmPayment']);
+
+    Route::post('stripe/generate-payment-url',[ApiController::class, 'generatePaymentUrl']);
+
     Route::get('get_payment_details', [ApiController::class, 'get_payment_details']);
     Route::get('get_payment_settings', [ApiController::class, 'get_payment_settings']);
     Route::get('paypal', [ApiController::class, 'paypal']);
