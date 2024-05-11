@@ -3134,8 +3134,8 @@ class ApiController extends Controller
         if (!$validator->fails()) {
 
             $chat = new Chats();
-            $chat->sender_id = $request->sender_id;
-            $chat->receiver_id = $request->receiver_id;
+            $chat->sender_id = (string)$request->sender_id;
+            $chat->receiver_id = (string)$request->receiver_id;
             $chat->property_id = $request->property_id;
             $chat->message = $request->message;
             $destinationPath = public_path('images') . config('global.CHAT_FILE');
