@@ -591,7 +591,7 @@ class ApiController extends Controller
         }
 
         if (isset($request->title)) {
-            $property = $property->where('title', $reqest->title);
+            $property = $property->where('title','LIKE', "%$reqest->title%");
         }
 
         if (isset($state)) {
