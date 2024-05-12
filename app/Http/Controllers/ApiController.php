@@ -590,6 +590,10 @@ class ApiController extends Controller
             $property = $property->where('country', $country);
         }
 
+        if (isset($request->title)) {
+            $property = $property->where('title', $reqest->title);
+        }
+
         if (isset($state)) {
             $property = $property->where('state', $state);
         }
