@@ -148,17 +148,11 @@ class ApiController extends Controller
         if (!$validator->fails()) {
             $type = 1;
             // $type = $request->type;
-            $firebase_id = $request->firbase_id ?? \Str::random(15);
+            $firebase_id = $request->firebase_id ?? \Str::random(15);
             $mobile = $request->mobile;
             $code = $request->verification_code;
 
-            $user = Customer::where('mobile', $mobile)/*->where('verification_code', $code)*/->get();
-
-            if($code != 123456){
-                $response['error'] = true;
-                $response['message'] = 'Invalid Verification Code';
-                return response()->json($response);
-            }
+            $user = Customer::where('mobile', $mobile)->where('firebase_id', $firebase_id)->get();
 
             if ($user->isEmpty()) {
                 $saveCustomer = new Customer();
@@ -244,7 +238,7 @@ class ApiController extends Controller
                 $response['token'] = $token;
                 $response['data'] = $credentials;
             } else {
-                $credentials = Customer::where('mobile', $mobile)/*->where('verification_code', $code)*/->first();
+                $credentials = Customer::where('mobile', $mobile)->where('firebase_id', $firebase_id)->first();
                 try {
                     $token = JWTAuth::fromUser($credentials);
                     if (!$token) {
