@@ -523,7 +523,7 @@ class ApiController extends Controller
         if(isset($parameters) && is_array($parameters)){
             $property = $property->whereHas('parameters', function ($q) use ($parameters) {
                 foreach($parameters as $parameter){
-                    $q->where('parameter_id', $parameter['id'])->where('value', $parameter['value']);
+                    $q->where('parameter_id', $parameter['id'])->where('value_ar', $parameter['value']);
                 }
             });
         }
