@@ -488,6 +488,8 @@ class ApiController extends Controller
         $parameter_id = $request->parameter_id;
         $totalClicks=0;
 
+        $parameters = $request->parameters;
+
         if (isset($caysh) && $caysh == 1) {
             if(isset($request->current_user)){
                 if ($current_user_data->role == 1) {
@@ -515,6 +517,14 @@ class ApiController extends Controller
         if (isset($parameter_id)) {
             $property = $property->whereHas('parameters', function ($q) use ($parameter_id) {
                 $q->where('parameter_id', $parameter_id);
+            });
+        }
+
+        if(isset($parameters) && is_array($parameters)){
+            $property = $property->whereHas('parameters', function ($q) use ($parameters) {
+                foreach($parameters as $parameter){
+                    $q->where('parameter_id', $parameter['id'])->where('value', $parameter['value']);
+                }
             });
         }
 
