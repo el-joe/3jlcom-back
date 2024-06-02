@@ -71,7 +71,7 @@ class PropertController extends Controller
             $country = get_countries_from_json();
             $parameters = parameter::all();
             $currency_symbol = Setting::where('type', 'currency_symbol')->pluck('data')->first();
-            
+
             //dd($category);
             return view('property.create', compact('customer','category','manufacturer','model','year','city','area', 'country', 'parameters', 'currency_symbol'));
         }
@@ -297,7 +297,7 @@ class PropertController extends Controller
             $UpdateProperty->year_id = $request->year;
             $UpdateProperty->city_id = $request->city;
             $UpdateProperty->area_id = $request->area;
-            
+
             $UpdateProperty->title = $request->title;
             $UpdateProperty->description = $request->description;
             $UpdateProperty->address = $request->address ?? "";
@@ -563,8 +563,14 @@ class PropertController extends Controller
                 $operate = '<a  href="' . route('property.edit', $row->id) . '"  class="btn icon btn-primary btn-sm rounded-pill m-1" title="Edit"><i class="fa fa-edit"></i></a>';
             }
             $operate1 = '<a  id="' . $row->id . '"  class="btn icon btn-primary btn-sm rounded-pill" data-status="' . $row->status . '" data-oldimage="' . $row->image . '" data-types="" data-bs-toggle="modal" data-bs-target="#editModal"  onclick="setValue(this.id);" title="Edit"><i class="bi bi-eye-fill"></i></a>';
-            
-            $operate .= '<a href="#" onclick="copyURL()" data-code="' . $row->id . '" id="url" class="btn icon btn-secondary btn-sm rounded-pill m-1" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" title="Copy URL"><i class="fa fa-copy"></i></a>';
+
+            $url = urlencode("https://3jlcom.com/properties-deatils/$row->id");
+
+            $operate .= '<a href="#" onclick="copyURL(event,"'. $url .'")" data-code="' . $row->id . '" id="url" class="btn icon btn-secondary btn-sm rounded-pill m-1" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" title="Copy URL"><i class="fa fa-copy"></i></a>';
+            // whatsapp anchor with bootstrap icon
+            $mobilePlus = substr($row->customer[0]->mobile, 0, 1);
+            $plus = ($mobilePlus === '+' ? '' : '+');
+            $operate .= '<a target="_blank" href="https://wa.me/'. $plus . ($row->customer[0]?->mobile??'0') .'?text=' . $url . '" class="btn icon btn-success btn-sm rounded-pill m-1" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" title="Share"><i class="bi bi-whatsapp"></i></a>';
 
             if (has_permissions('delete', 'property')) {
                 $operate .= '<a href="' . route('property.destroy', $row->id) . '" onclick="return confirmationDelete(event);" class="btn icon btn-danger btn-sm rounded-pill m-1" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" title="Delete"><i class="bi bi-trash"></i></a>';
@@ -622,12 +628,13 @@ class PropertController extends Controller
             $tempRow['interested_users'] = $operate1;
 
             $tempRow['status'] = ($row->status == '0') ? '<span class="badge rounded-pill bg-danger">Inactive</span>' : '<span class="badge rounded-pill bg-success">Active</span>';
-            
+
             //$customer = $row->customer->first();
             // $user = $row->user->first();
 
             if ($row->added_by != 0) {
-                $tempRow['added_by'] = $row->customer[0]->name ?? "";
+                $customerName = $row->customer[0]->name ?? "";
+                $tempRow['added_by'] =  "<a target='_blank' href='" . route('customer.index', ['id'=>$row->customer[0]->id]) . "'>" . $customerName . "</a>";
                 $tempRow['mobile'] = $row->customer[0]->mobile ?? "";
             }
             if ($row->added_by == 0) {
@@ -653,82 +660,82 @@ class PropertController extends Controller
         $bulkData['rows'] = $rows;
         return response()->json($bulkData);
     }
-    
+
     public function updateStatus(Request $request)
     {
         if (!has_permissions('update', 'property')) {
-            
+
             $response['error'] = true;
             $response['message'] = PERMISSION_ERROR_MSG;
             return response()->json($response);
-            
+
         } else {
-            
+
             Property::where('id', (string)$request->id)->update(['status' => $request->status]);
-            
+
             $user_interests = UserInterest::all();
-            
+
             if ($request->status == 1) {
                 foreach ($user_interests as $user_interest) {
                     $property = Property::find($request->id);
                     $property_type = $request->property_type;
-                    
+
                     if ($user_interest->manufacturer_ids != '') {
                         $manufacturer_ids = explode(',', $user_interest->manufacturer_ids);
                         $property = $property->whereIn('manufacturer_id', $manufacturer_ids);
                     }
-                    
+
                     if ($user_interest->model_ids != '') {
                         $model_ids = explode(',', $user_interest->model_ids);
                         $property = $property->whereIn('model_id', $model_ids);
                     }
-                    
+
                     if ($user_interest->city_ids != '') {
                         $city_ids = explode(',', $user_interest->city_ids);
                         $property = $property->whereIn('city_id', $city_ids);
                     }
-                    
+
                     if ($user_interest->area_ids != '') {
                         $area_ids = explode(',', $user_interest->area_ids);
                         $property = $property->whereIn('area_id', $area_ids);
                     }
-                    
+
                     /*if ($user_interest->year_range != '') {
-            
+
                         $max_year = explode(',', $user_interest->year_range)[1];
                         $min_year = explode(',', $user_interest->year_range)[0];
-                        
+
                         if (isset($max_year) && isset($min_year)) {
-            
+
                             $property = $property->where(function ($query) use ($min_year, $max_year) {
                                 $query->whereRaw("CAST(price AS DECIMAL(10, 2)) >= ?", [$min_year])
                                     ->whereRaw("CAST(price AS DECIMAL(10, 2)) <= ?", [$max_year]);
                             });
                         }
                     }
-                    
+
                     if ($user_interest->price_range != '') {
-            
+
                         $max_price = explode(',', $user_interest->price_range)[1];
                         $min_price = explode(',', $user_interest->price_range)[0];
-                        
+
                         if (isset($max_price) && isset($min_price)) {
                             $min_price = floatval($min_price);
                             $max_price = floatval($max_price);
-            
+
                             $property = $property->where(function ($query) use ($min_price, $max_price) {
                                 $query->whereRaw("CAST(price AS DECIMAL(10, 2)) >= ?", [$min_price])
                                     ->whereRaw("CAST(price AS DECIMAL(10, 2)) <= ?", [$max_price]);
                             });
                         }
                     }*/
-                    
+
                     $total = $property->get()->count();
                     $fcm_tokens = array();
 
                     if ($total > 0) {
                         $user_tokens = Usertokens::where('customer_id', (int)$user_interest->user_id)->select('id', 'fcm_id')->get()->pluck('fcm_id')->toArray();
-                        
+
                         $fcm_tokens[] = $user_tokens;
                         if (!empty($fcm_tokens)) {
                             $fcmMsg = array(
@@ -745,12 +752,12 @@ class PropertController extends Controller
                     }
                 }
             }
-            
+
             $Property = Property::with('customer')->find($request->id);
             if (count($Property->customer) > 0) {
-                
+
                 if ($Property->customer[0]->fcm_id != '' && $Property->customer[0]->notification == 1) {
-                    
+
                     //START :: Send Notification To Customer
                     $fcm_ids = array();
                     $customer_id = Customer::where('id', (string)$Property->customer[0]->id)->where('isActive', '1')->where('notification', 1)->get();

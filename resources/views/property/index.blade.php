@@ -43,7 +43,7 @@
             <div class="card-body">
 
                 <div class="row " id="toolbar">
-                    
+
                     <div class="col-sm-6">
                         {{-- {{ Form::label('category', 'Category', ['class' => 'form-label col-12 text-center']) }} --}}
                         <select class="form-select form-control-sm" id="category">
@@ -55,7 +55,7 @@
                             @endif
                         </select>
                     </div>
-                    
+
                     <div class="col-sm-6">
                         {{-- {{ Form::label('status', 'Status', ['class' => 'form-label col-12 text-center']) }} --}}
                         <select id="status" class="form-select form-control-sm">
@@ -74,7 +74,7 @@
                             data-side-pagination="server" data-pagination="true"
                             data-page-list="[5, 10, 20, 50, 100, 200,All]" data-search="true" data-search-align="right"
                             data-toolbar="#toolbar" data-show-columns="true" data-show-refresh="true"
-                            data-fixed-columns="true" data-fixed-number="1" data-fixed-right-number="1"
+                            data-fixed-columns="false" data-fixed-number="1" data-fixed-right-number="1"
                             data-trim-on-search="false" data-responsive="true" data-sort-name="id" data-sort-order="desc"
                             data-pagination-successively-size="3" data-query-params="queryParams">
                             <thead>
@@ -135,7 +135,7 @@
 
     </section>
 
-
+    <input type="hidden" name="clipboard">
 
 @endsection
 
@@ -161,15 +161,19 @@
                 $('#status').val(params.get('status')).trigger('change');
             }
         });
-            
-        function copyURL() {
-            var code = $(this).attr('data-code');
-            var $temp = $("<input>");
-            $("body").append($temp);
-            $temp.val(code).select();
-            document.execCommand("copy");
-            $temp.remove();
-                
+
+        const copyContent = async (txt) => {
+            try {
+                await navigator.clipboard.writeText(txt);
+            console.log('Content copied to clipboard');
+            } catch (err) {
+            console.error('Failed to copy: ', err);
+            }
+        }
+
+        async function copyURL(event,url) {
+            copyContent(url);
+
             Toastify({
                 text: 'URL Copied successfully',
                 duration: 3000,

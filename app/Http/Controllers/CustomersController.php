@@ -49,7 +49,7 @@ class CustomersController extends Controller
         }
     }
 
-    public function customerList()
+    public function customerList(Request $request)
     {
         $offset = 0;
         $limit = 10;
@@ -74,7 +74,7 @@ class CustomersController extends Controller
 
 
 
-        $sql = Customer::orderBy($sort, $order);
+        $sql = Customer::orderBy($sort, $order)->when($request->id,fn($q)=>$q->whereId($request->id));
 
 
         if (isset($_GET['search']) && !empty($_GET['search'])) {
@@ -114,7 +114,7 @@ class CustomersController extends Controller
             $tempRow['fcm_id'] = $row->fcm_id;
 
             $isActive = $row->isActive == '1' ? 'checked' : '';
-            
+
             $enable_disable =   '<div class="form-check form-switch " style="justify-content: center;display: flex;">
                 <input class="form-check-input switch1" name="' . $row->id . '"  onclick="chk(this);" type="checkbox" role="switch" ' . $isActive . '>
             </div>';
@@ -122,13 +122,13 @@ class CustomersController extends Controller
             $operate = '<a  id="' . $row->id . '"  class="btn icon btn-primary btn-sm rounded-pill" data-subscription="' . $row->subscription . '" data-oldimage="' . $row->image . '" data-types="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#editModal"  onclick="setValue(this.id);" title="Edit Package"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;';
 
             $isAgent = $row->role == '1' ? 'checked' : '';
-            
+
             $role =   '<div class="form-check form-switch " style="justify-content: center;display: flex;">
                 <input class="form-check-input switch2" name="' . $row->id . '"  onclick="chk1(this);" type="checkbox" role="switch" ' . $isAgent . '>
             </div>';
-            
+
             $isVerified = $row->isVerified == '1' ? 'checked' : '';
-            
+
             $verified =   '<div class="form-check form-switch " style="justify-content: center;display: flex;">
                 <input class="form-check-input switch3" name="' . $row->id . '"  onclick="chk2(this);" type="checkbox" role="switch" ' . $isVerified . '>
             </div>';
@@ -136,21 +136,22 @@ class CustomersController extends Controller
             $tempRow['customertotalpost'] =  '<a href="' . url('property') . '?customer=' . $row->id . '">' . $row->customertotalpost . '</a>';
             $tempRow['role'] = $role;
             $tempRow['verified'] = $verified;
-            
+
             $userPurchasedPackage = UserPurchasedPackage::where('modal_id', (string)$row->id)->first();
-            
+
             if($userPurchasedPackage){
                 $package = Package::where('id', $userPurchasedPackage->package_id)->first();
                 $tempRow['subscription_startdate'] = $userPurchasedPackage->start_date;
                 $tempRow['subscription_enddate'] = $userPurchasedPackage->end_date;
-                $tempRow['subscription'] = $package->name; // . ' (' . $package->property_limit . ')';
+                $subscriptionAnchor = "<a href='javascript:' data-bs-toggle='modal' data-subscription='" . $row->subscription . "' data-oldimage='" . $row->image . "' data-types='" . $row->id . "'  data-bs-target='#editModal'  onclick='setValue(this.id);' title='Edit Package'>" . $package->name . "</a>";
+                $tempRow['subscription'] = $subscriptionAnchor; // . ' (' . $package->property_limit . ')';
             }else{
                 $tempRow['subscription_startdate'] = '';
                 $tempRow['subscription_enddate'] = '';
                 $tempRow['subscription'] = '';
             }
-            
-            
+
+
             $tempRow['enble_disable'] = $enable_disable;
             $tempRow['operate'] = $operate;
             $rows[] = $tempRow;
@@ -160,14 +161,14 @@ class CustomersController extends Controller
         $bulkData['rows'] = $rows;
         return response()->json($bulkData);
     }
-    
+
     public function updatePackage(Request $request)
     {
         $package = Package::find($request->edit_user_package);
         $userPurchasedPackage = UserPurchasedPackage::where('modal_id', $request->id)->first();
         $startDate = UserPurchasedPackage::where('modal_id', $request->id)->first()->start_date;
         $purchaseExpired = $userPurchasedPackage->end_date > Carbon::now() ? false : true;
-        
+
         if (!has_permissions('delete', 'customer')) {
             return back()->with('error', PERMISSION_ERROR_MSG);
         } else {
@@ -181,7 +182,7 @@ class CustomersController extends Controller
                     ]);
                     return back()->with('success', 'Customer Package Updated Successfully');
                     break;
-        
+
                 case 'change':
                     UserPurchasedPackage::where('modal_id', $request->id)->update([
                         'package_id' => $request->edit_user_package,

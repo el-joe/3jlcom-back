@@ -19,7 +19,7 @@
                             </a>
                         </li>
                     @endif
-                    
+
                     @if (has_permissions('read', 'property'))
                         <li class="sidebar-item">
                             <a href="{{ url('property') }}" class='sidebar-link'>
@@ -28,7 +28,7 @@
                             </a>
                         </li>
                     @endif
-                    
+
                     @if (has_permissions('read', 'customer'))
                         <li class="sidebar-item">
                             <a href="{{ url('customer') }}" class='sidebar-link'>
@@ -37,7 +37,7 @@
                             </a>
                         </li>
                     @endif
-                    
+
                     @if (has_permissions('read', 'customer'))
                         <li class="sidebar-item">
                             <a href="{{ url('property-inquiry') }}" class='sidebar-link'>
@@ -46,7 +46,7 @@
                             </a>
                         </li>
                     @endif
-                    
+
                     {{--@if (has_permissions('read', 'customer'))
                         <li class="sidebar-item">
                             <a href="{{ url('personalized') }}" class='sidebar-link'>
@@ -55,7 +55,7 @@
                             </a>
                         </li>
                     @endif--}}
-                    
+
                     @if (has_permissions('read', 'categories') || has_permissions('read', 'unit'))
                         <li class="sidebar-item has-sub">
                             <a href="#" class='sidebar-link'>
@@ -63,7 +63,7 @@
                                 <span class="menu-item">{{ __('Specifications')}}</span>
                             </a>
                             <ul class="submenu" style="padding-left: 0rem">
-                                
+
                                 @if (has_permissions('read', 'categories'))
                                 <li class="submenu-item">
                                     <a href="{{ url('categories') }}">
@@ -72,7 +72,7 @@
                                     </a>
                                 </li>
                                 @endif
-                                
+
                                 @if (has_permissions('read', 'unit'))
                                 <li class="submenu-item">
                                     <a href="{{ url('parameters') }}">
@@ -81,7 +81,7 @@
                                     </a>
                                 </li>
                                 @endif
-                                
+
                                 @if (has_permissions('read', 'categories'))
                                 <li class="submenu-item">
                                     <a href="{{ url('manufacturers') }}">
@@ -90,7 +90,7 @@
                                     </a>
                                 </li>
                                 @endif
-                                
+
                                 @if (has_permissions('read', 'categories'))
                                 <li class="submenu-item">
                                     <a href="{{ url('models') }}">
@@ -102,7 +102,7 @@
                             </ul>
                         </li>
                     @endif
-                    
+
                     @if (has_permissions('read', 'slider'))
                         <li class="sidebar-item">
                             <a href="{{ url('slider') }}" class='sidebar-link'>
@@ -111,35 +111,35 @@
                             </a>
                         </li>
                     @endif
-                    
+
                     <li class="sidebar-item">
                         <a href="{{ url('article') }}" class='sidebar-link'>
                             <i class="fas fa-newspaper"></i>
                             <span class="menu-item">{{ __('Article') }}</span>
                         </a>
                     </li>
-                    
+
                     <li class="sidebar-item">
                         <a href="{{ url('advertisement') }}" class='sidebar-link'>
                             <i class="fas fa-audio-description"></i>
                             <span class="menu-item">{{ __('Advertisement') }}</span>
                         </a>
                     </li>
-                    
+
                     <li class="sidebar-item">
                         <a href="{{ url('package') }}" class='sidebar-link'>
                             <i class="fas fa-archive"></i>
                             <span class="menu-item">{{ __('Packages') }}</span>
                         </a>
                     </li>
-                    
+
                     <li class="sidebar-item">
                         <a href="{{ url('payment') }}" class='sidebar-link'>
                             <i class="fas fa-money-check-alt"></i>
                             <span class="menu-item">{{ __('Payment') }}</span>
                         </a>
                     </li>
-                    
+
                     @if (has_permissions('read', 'notification'))
                         <li class="sidebar-item">
                             <a href="{{ url('notification') }}" class='sidebar-link'>
@@ -148,7 +148,7 @@
                             </a>
                         </li>
                     @endif
-                    
+
                     @if (has_permissions('read', 'customer'))
                          <li class="sidebar-item has-sub">
                             <a href="#" class='sidebar-link'>
@@ -156,7 +156,7 @@
                                 <span class="menu-item">{{ __('Users Reports') }}</span>
                             </a>
                             <ul class="submenu" style="padding-left: 0rem">
-                                
+
                                 @if (has_permissions('read', 'customer'))
                                 <li class="submenu-item">
                                     <a href="{{ url('users_reports') }}">
@@ -165,7 +165,7 @@
                                     </a>
                                 </li>
                                 @endif
-                                
+
                                 @if (has_permissions('read', 'customer'))
                                 <li class="submenu-item">
                                     <a href="{{ url('report-reasons') }}">

@@ -26,11 +26,11 @@
                 <div class="row">
                     <div class="col-12">
                         <table class="table-light" aria-describedby="mydesc" class='table-striped' id="table_list"
-                            data-toggle="table" data-url="{{ url('customerList') }}" data-click-to-select="true"
+                            data-toggle="table" data-url="{{ url('customerList') . (request('id') ? '?id='. request('id') : '') }}" data-click-to-select="true"
                             data-side-pagination="server" data-pagination="true"
                             data-page-list="[5, 10, 20, 50, 100, 200,All]" data-search="true" data-toolbar="#toolbar"
                             data-show-columns="true" data-show-refresh="true" data-fixed-columns="true"
-                            data-fixed-number="1" data-fixed-right-number="1" data-trim-on-search="false"
+                            {{-- data-fixed-number="1" data-fixed-right-number="1" data-trim-on-search="false" --}}
                             data-responsive="true" data-sort-name="id" data-sort-order="desc"
                             data-pagination-successively-size="3" data-query-params="queryParams" data-show-export="true"
                             data-export-options='{ "fileName": "data-list-<?= date('d-m-y') ?>" }'>
@@ -85,7 +85,7 @@
                                     <input type="hidden" name="id" id="id">
                                 </div>
                             </div>
-                            
+
                             <div class="modal-footer" style="padding: 2% 0%">
                                 <button type="submit" class="btn btn-primary waves-effect waves-light" name="action" value="change">{{ __('Change Package') }}</button>
                                 <button type="submit" class="btn btn-danger waves-effect waves-light" name="action" value="renew">{{ __('Renew Package') }}</button>
@@ -100,7 +100,9 @@
         </div>
         <input type="hidden" id="customerid" value="{{ isset($_GET['customer']) ? $_GET['customer'] : '' }}">
     </section>
+
 @endsection
+
 
 @section('script')
     <script>
@@ -114,10 +116,13 @@
             };
         }
 
+        function packageModalData(id) {
+        }
+
         function setValue(id) {
             $("#id").val(id);
         }
-        
+
         function chk(checkbox) {
 
             if (checkbox.checked) {
@@ -129,7 +134,7 @@
                 disable(event.target.name,0,0);
             }
         }
-        
+
         function chk1(checkbox) {
 
             if (checkbox.checked) {
@@ -141,7 +146,7 @@
                 disable(event.target.name,1,0);
             }
         }
-        
+
         function chk2(checkbox) {
 
             if (checkbox.checked) {

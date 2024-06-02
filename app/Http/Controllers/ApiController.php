@@ -2014,6 +2014,7 @@ class ApiController extends Controller
             'property_id' => 'required',
             'package_id' => 'required',
         ]);
+
         if (!$validator->fails()) {
             $payload = JWTAuth::getPayload($this->bearerToken($request));
             $current_user = (string)($payload['customer_id']);
