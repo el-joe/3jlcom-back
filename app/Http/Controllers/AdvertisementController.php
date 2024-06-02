@@ -176,7 +176,7 @@ class AdvertisementController extends Controller
             if($request->id != null){
                 $adv = Advertisement::find($request->id);
 
-                $adv->update($request->all());
+                $adv->update($request->all()+['status'=>$request->edit_adv_status]);
             }else{
                 $adv = Advertisement::create($request->all()+['type'=>'Slider','is_enable'=>1,'status'=>$request->edit_adv_status]);
             }
