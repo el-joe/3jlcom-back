@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Advertisement;
+use App\Models\Customer;
 use App\Models\Notifications;
 use App\Models\Property;
 use Illuminate\Http\Request;
@@ -86,7 +87,7 @@ class AdvertisementController extends Controller
             $sql->skip($offset)->take($limit);
         }
         $res = $sql->get();
-        
+
         //return $res;
 
         $bulkData = array();
@@ -100,8 +101,8 @@ class AdvertisementController extends Controller
         $operate = '';
         foreach ($res as $row) {
 
-            $operate = '<a  id="' . $row->id . '"  class="btn icon btn-primary btn-sm rounded-pill" data-status="' . $row->status . '" data-oldimage="' . $row->image . '" data-types="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#editModal"  onclick="setValue(this.id);" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;';
-            
+            $operate = '<a  id="' . $row->id . '"  class="btn icon btn-primary btn-sm rounded-pill"  data-bs-toggle="modal" data-bs-target="#editModal"  onclick="setValue(this.id);" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;';
+
             $tempRow['id'] = $row->id;
             $tempRow['title'] = $row->property_id;
             $tempRow['type'] = __($row->type);
@@ -147,7 +148,15 @@ class AdvertisementController extends Controller
      */
     public function edit($id)
     {
-        //
+        $adv = Advertisement::with('customer.property','property')->find($id);
+        $customers = Customer::where('isActive',1)->whereHas('property',fn($q)=>$q->where('status',1))->get();
+        $html = view('advertisement.modal', get_defined_vars())->render();
+        return response()->json($html);
+    }
+
+    function customerProperties($id){
+        $properties = Property::where('added_by',$id)->where('status',1)->get();
+        return response()->json($properties);
     }
 
     /**
@@ -164,9 +173,14 @@ class AdvertisementController extends Controller
             $response['message'] = PERMISSION_ERROR_MSG;
             return response()->json($response);
         } else {
-            Advertisement::find($request->id)->update(['status' => $request->edit_adv_status]);
+            if($request->id != null){
+                $adv = Advertisement::find($request->id);
 
-            $adv = Advertisement::with('customer')->find($request->id);
+                $adv->update($request->all());
+            }else{
+                $adv = Advertisement::create($request->all()+['type'=>'Slider','is_enable'=>1,'status'=>$request->edit_adv_status]);
+            }
+
             // dd($adv);
             $status = $adv->status;
             if ($adv->customer->fcm_id != '' && $adv->customer->notification == 1) {

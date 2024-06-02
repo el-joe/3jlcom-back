@@ -1201,48 +1201,54 @@ class ApiController extends Controller
     //* START :: get_slider   *//
     public function get_slider(Request $request)
     {
-        $tempRow = array();
-        $slider = Slider::select('id', 'image', 'sequence', 'category_id', 'propertys_id')->orderBy('sequence', 'ASC')->get();
-        if (!$slider->isEmpty()) {
-            foreach ($slider as $row) {
+        $slider = Slider::select('id', 'image', 'sequence', 'category_id', 'propertys_id')
+            ->with('property')
+            ->orderBy('sequence', 'ASC')->get()->map(function($row){
+                if(filter_var($row->image, FILTER_VALIDATE_URL) === false){
+                    $image = ($row->image != '') ? url('') . config('global.IMG_PATH') . config('global.SLIDER_IMG_PATH') . $row->image : $row->property?->title_image;
+                }else{
+                    $image = $row->property?->title_image;
+                }
+                return [
+                    'id' => $row->id,
+                    'image' => $image,
+                    'sequence' => $row->sequence,
+                    'category_id' => $row->category_id,
+                    'propertys_id' => $row->propertys_id,
+                    'promoted' => true,
+                ];
+            });
+
+        $advertisements = Advertisement::whereRaw('now() between start_date and end_date')
+            ->with('property')
+            ->where('is_enable', 1)->where('status', 0)->get()->map(function($row){
                 if (filter_var($row->image, FILTER_VALIDATE_URL) === false) {
-                    $property_img = Property::select('title_image')->find($row->propertys_id);
-                    // dd($property_img);
-                    $tempRow['image'] = ($row->image != '') ? url('') . config('global.IMG_PATH') . config('global.SLIDER_IMG_PATH') . $row->image : $property_img->title_image;
+                    $row->image = ($row->image != '') ? url('') . config('global.IMG_PATH') . config('global.ADVERTISEMENT_IMAGE_PATH') . $row->image : '';
                 } else {
-                    echo "in";
-                    $property_img = Property::select('title_image')->find($slider->propertys_id);
-                    // $row->image =
-                    $tempRow['image'] = $property_img->title_image;
+                    $row->image = $row->image;
                 }
-                $tempRow['id'] = $row->id;
-                // $tempRow['image'] = $row->image;
-                $tempRow['sequence'] = $row->sequence;
-                $tempRow['category_id'] = $row->category_id;
-                $tempRow['propertys_id'] = $row->propertys_id;
+                return [
+                    'id' => $row->id,
+                    'image' => $row->property?->title_image,
+                    'sequence' => 0,
+                    'category_id' => $row->property?->category_id,
+                    'propertys_id' => $row->property_id,
+                    'promoted' => true,
+                ];
+            });
 
+            $rows = $slider->merge($advertisements)->sortBy('sequence')->values()->all();
 
-
-                $promoted = Slider::where('propertys_id', $row->propertys_id)->first();
-                // print_r($promoted);
-
-                if ($promoted) {
-                    $tempRow['promoted'] = true;
-                } else {
-                    $tempRow['promoted'] = false;
-                }
-                $rows[] = $tempRow;
+            if($rows->count() > 0){
+                $response['error'] = false;
+                $response['message'] = "Data Fetch Successfully";
+                $response['data'] = $rows;
+            }else{
+                $response['error'] = false;
+                $response['message'] = "No data found!";
+                $response['data'] = [];
             }
 
-
-            $response['error'] = false;
-            $response['message'] = "Data Fetch Successfully";
-            $response['data'] = $rows;
-        } else {
-            $response['error'] = false;
-            $response['message'] = "No data found!";
-            $response['data'] = [];
-        }
         return response()->json($response);
     }
     //* END :: get_slider   *//

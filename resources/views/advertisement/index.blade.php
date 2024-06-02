@@ -21,6 +21,16 @@
 
 @section('content')
     <section class="section">
+        {{-- create add btn --}}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <a href="javascript:" onclick="setValue(0)" class="btn btn-primary">إضافه اعلان مميز</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="card">
             <div class="card-body">
                 <div class="row">
@@ -82,47 +92,12 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6 class="modal-title" id="myModalLabel1">{{ __('Advertisement Status') }}</h6>
+                        <h6 class="modal-title" id="myModalLabel1">بيانات الاعلان المميز</h6>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
 
-                        <form action="{{ url('adv-status-update') }}" class="form-horizontal"
-                            enctype="multipart/form-data" method="POST" data-parsley-validate>
 
-                            {{ csrf_field() }}
-
-
-                            <div class="row">
-
-
-
-                                <div class="col-sm-12">
-
-
-
-                                    <select name="edit_adv_status" id="edit_adv_status" class="chosen-select form-select"
-                                        style="width: 100%">
-
-                                        <option value='0'>{{ __('Approved') }}</option>
-                                        <option value='1'>{{ __('Pending') }}</option>
-                                        <option value='2'>{{ __('Rejected') }}</option>
-
-                                    </select>
-                                    <input type="hidden" name="id" id="id">
-
-
-                                </div>
-
-
-                            </div>
-                            <div class="modal-footer" style="padding: 2% 0%">
-                                <button type="button" class="btn btn-secondary waves-effect"
-                                    data-bs-dismiss="modal">{{ __('Close') }}</button>
-
-                                <button type="submit"
-                                    class="btn btn-primary waves-effect waves-light">{{ __('Save') }}</button>
-                        </form>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -152,9 +127,34 @@
         });
 
         function setValue(id) {
+            $('#editModal .modal-body').html('انتظر قليلا');
 
-            $("#id").val(id);
-            // $("#edit_category").val($("#" + id).parents('tr:first').find('td:nth-child(3)').text());
+            $.ajax({
+                url : '/advertisement/' + id + '/edit',
+                type : 'GET',
+                success : function(data) {
+                    $('#editModal .modal-body').html(data);
+                    $('#editModal').modal('show');
+                }
+            });
+        }
+
+        function getProperties(e) {
+            var customer_id = $(e.currentTarget).val();
+            $.ajax({
+                url: "/customer-properties/"+ customer_id,
+                type: "get",
+                cache: false,
+                success: function(result) {
+                    $('#property_id').empty()
+                    result.map((item) => {
+                        $('#property_id').append(`<option value="${item.id}">${item.title}</option>`);
+                    });
+                },
+                error: function(error) {
+
+                }
+            });
         }
 
         function queryParams(p) {

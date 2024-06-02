@@ -149,6 +149,7 @@ Route::middleware(['auth', 'checklogin'])->group(function () {
 
 
         Route::resource('advertisement', AdvertisementController::class);
+        Route::get('customer-properties/{id}', [AdvertisementController::class, 'customerProperties']);
         Route::get('advertisement_list', [AdvertisementController::class, 'show']);
         Route::post('advertisement-status', [AdvertisementController::class, 'updateStatus'])->name('advertisement.updateadvertisementstatus');
         Route::post('adv-status-update', [AdvertisementController::class, 'update'])->name('adv-status-update');
