@@ -34,7 +34,10 @@ class OptimizeImages extends Command
             if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'])) {
                 continue;
             }
+            // get file size in kb
+            $this->info('Size Before: ' . (filesize($file) / 1024).'KB');
             $this->optimizeImage($file);
+            $this->info('Size After: ' . (filesize($file) / 1024).'KB');
         }
     }
 
