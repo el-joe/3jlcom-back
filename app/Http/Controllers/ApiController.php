@@ -153,7 +153,9 @@ class ApiController extends Controller
             $code = $request->verification_code;
 
             $user = Customer::where(function($q)use($mobile){
-                $q->where('mobile','LIKE',"%$mobile")->orWhere('mobile',$mobile);
+                $withoutPlus = ltrim($mobile, '+');
+                $withPlus = '+'.$withoutPlus;
+                $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
             })->where('firebase_id', $firebase_id)->get();
 
             if ($user->isEmpty()) {
