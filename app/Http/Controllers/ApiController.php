@@ -152,7 +152,9 @@ class ApiController extends Controller
             $mobile = $request->mobile;
             $code = $request->verification_code;
 
-            $user = Customer::where('mobile', $mobile)->where('firebase_id', $firebase_id)->get();
+            $user = Customer::where(function($q)use($mobile){
+                $q->where('mobile','LIKE',"%$mobile")->orWhere('mobile',$mobile);
+            })->where('firebase_id', $firebase_id)->get();
 
             if ($user->isEmpty()) {
                 $saveCustomer = new Customer();
