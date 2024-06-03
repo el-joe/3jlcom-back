@@ -5,7 +5,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": ">=7.3 || ^8.2.*",
+        "php": ">=7.3 || ^8.2.5",
         "barryvdh/laravel-debugbar": "*",
         "doctrine/dbal": "*",
         "guzzlehttp/guzzle": "^7.2",
