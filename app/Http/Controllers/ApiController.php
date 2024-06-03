@@ -2284,6 +2284,23 @@ class ApiController extends Controller
         return response()->json($response);
     }
 
+    function advertisementRequest(Request $request,$id)
+    {
+        $property = Property::findOrFail($id);
+
+        Advertisement::firstOrCreate([
+            'property_id' => $property->id,
+            'customer_id' => $property->added_by,
+            'start_date' => Carbon::now(),
+            'end_date'=> Carbon::now()->addDays(9),
+            'type' => 'Slider',
+            'is_enable' => 1,
+            'status' => 1,
+        ]);
+
+        return response()->json(['message' => 'Advertisement Request Sent Successfully']);
+    }
+
     public function delete_advertisement(Request $request)
     {
         $validator = Validator::make($request->all(), [

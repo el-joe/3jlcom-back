@@ -65,6 +65,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('get_favourite_property', [ApiController::class, 'get_favourite_property']);
 
     Route::post('store_advertisement', [ApiController::class, 'store_advertisement']);
+    Route::post('advertisement-request/{id}',[ApiController::class, 'advertisementRequest']);
     Route::post('delete_advertisement', [ApiController::class, 'delete_advertisement']);
 
     Route::post('set_property_inquiry', [ApiController::class, 'set_property_inquiry']);
