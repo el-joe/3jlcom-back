@@ -242,7 +242,11 @@ class ApiController extends Controller
                 $response['token'] = $token;
                 $response['data'] = $credentials;
             } else {
-                $credentials = Customer::where('mobile', $mobile)->where('firebase_id', $firebase_id)->first();
+                $credentials = Customer::where(function($q)use($mobile){
+                    $withoutPlus = ltrim($mobile, '+');
+                    $withPlus = '+'.$withoutPlus;
+                    $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
+                })->where('firebase_id', $firebase_id)->first();
                 try {
                     $token = JWTAuth::fromUser($credentials);
                     if (!$token) {
