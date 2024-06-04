@@ -1224,6 +1224,7 @@ class ApiController extends Controller
                     'category_id' => $row->category_id,
                     'propertys_id' => $row->propertys_id,
                     'promoted' => true,
+                    'offer'=> $row->property != null ? get_property_details($row->property)[0] : null,
                 ];
             });
 
@@ -1242,6 +1243,7 @@ class ApiController extends Controller
                     'category_id' => $row->property?->category_id,
                     'propertys_id' => $row->property_id,
                     'promoted' => true,
+                    'offer'=> $row->property != null ? get_property_details($row->property)[0] : null,
                 ];
             });
 
