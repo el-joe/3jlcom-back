@@ -1247,7 +1247,7 @@ class ApiController extends Controller
 
             $rows = $slider->merge($advertisements)->sortBy('sequence')->values()->all();
 
-            if($rows->count() > 0){
+            if(count($rows) > 0){
                 $response['error'] = false;
                 $response['message'] = "Data Fetch Successfully";
                 $response['data'] = $rows;
