@@ -364,6 +364,8 @@ function get_property_details($result, $current_user = NULL)
         $tempRow['installment_price'] = $row->installment_price;
         $tempRow['installment_down'] = $row->installment_down;
         $tempRow['installment_type'] = $row->installment_type;
+        $tempRow['is_special'] = $row->advertisement->where('is_enable', 1)->where('status', 0)->count() > 0 ? true : false;
+        $tempRow['special_requested'] = $row->advertisement->where('status','!=', 0)->count() > 0 ? true : false;
 
         if ($customer && $row->added_by != 0) {
 
