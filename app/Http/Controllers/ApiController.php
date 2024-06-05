@@ -429,12 +429,15 @@ class ApiController extends Controller
         $current_user = (string)($payload['customer_id']);
         $offset = isset($request->offset) ? $request->offset : 0;
         $limit = isset($request->limit) ? $request->limit : 10;
+        $id = $request->id;
 
         $property = Property::with('customer')->with('user')->with('category:id,category,category_ar,manufacturer,installment,caysh,image')
         ->with('manufacturer:id,manufacturer,manufacturer_ar,image')->with('model:id,model')
         ->with('year:id,year')->with('city:id,city,city_ar')->with('favourite')->with('parameters')->with('interested_users');
 
-        $property = $property->where('post_type', 1)->where('added_by', $current_user);
+        $property = $property->where('post_type', 1)->where('added_by', $current_user)->when($id, function ($query) use ($id) {
+            return $query->where('id', $id);
+        });
         $totalClicks = $property->where('post_type', 1)->where('added_by', $current_user)->sum('total_click');
 
         $total = $property->get()->count();
