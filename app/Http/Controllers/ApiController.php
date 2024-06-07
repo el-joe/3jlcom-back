@@ -141,8 +141,9 @@ class ApiController extends Controller
     public function user_signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'verification_code' => 'required',
-            'mobile' => 'required'
+            // 'verification_code' => 'required',
+            'mobile' => 'required',
+            'firebase_id'=>'required'
         ]);
 
         if (!$validator->fails()) {
@@ -150,10 +151,10 @@ class ApiController extends Controller
             // $type = $request->type;
             $firebase_id = $request->firebase_id ?? \Str::random(15);
             $mobile = $request->mobile;
-            $code = $request->verification_code;
+            // $code = $request->verification_code;
 
             $user = Customer::where(function($q)use($mobile){
-                $withoutPlus = ltrim($mobile, '+');
+                $withoutPlus = str_replace('+','',$mobile);
                 $withPlus = '+'.$withoutPlus;
                 $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
             })->where('firebase_id', $firebase_id)->get();

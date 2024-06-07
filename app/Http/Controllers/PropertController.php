@@ -125,8 +125,8 @@ class PropertController extends Controller
             $Saveproperty->city_name = (isset($request->city_name)) ? $request->city_name : '';
             $Saveproperty->country = (isset($request->country)) ? $request->country : '';
             $Saveproperty->state = (isset($request->state)) ? $request->state : '';
-            $Saveproperty->latitude = (isset($request->latitude)) ? $request->latitude : '';
-            $Saveproperty->longitude = (isset($request->longitude)) ? $request->longitude : '';
+            $Saveproperty->latitude = (isset($request->latitude)) ? $request->latitude : '0';
+            $Saveproperty->longitude = (isset($request->longitude)) ? $request->longitude : '0';
             $Saveproperty->video_link = (isset($request->video_link)) ? $request->video_link : '';
             $Saveproperty->post_type = 0;
             $Saveproperty->added_by = (isset($request->customer)) ? $request->customer : 0;
@@ -308,8 +308,8 @@ class PropertController extends Controller
             $UpdateProperty->state = (isset($request->state)) ? $request->state : '';
             $UpdateProperty->country = (isset($request->country)) ? $request->country : '';
             $UpdateProperty->city_name = (isset($request->city_name)) ? $request->city_name : '';
-            $UpdateProperty->latitude = (isset($request->latitude)) ? $request->latitude : '';
-            $UpdateProperty->longitude = (isset($request->longitude)) ? $request->longitude : '';
+            $UpdateProperty->latitude = (isset($request->latitude)) ? $request->latitude : '0';
+            $UpdateProperty->longitude = (isset($request->longitude)) ? $request->longitude : '0';
             $UpdateProperty->video_link = (isset($request->video_link)) ? $request->video_link : '';
 
 

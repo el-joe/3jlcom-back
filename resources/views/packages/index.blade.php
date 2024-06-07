@@ -20,15 +20,20 @@
                             {{ Form::label('name', __('Name'), ['class' => 'form-label col-12 ']) }}
                             {{ Form::text('name', '', ['class' => 'form-control ', 'placeholder' => __('Package Name'), 'data-parsley-required' => 'true', 'id' => 'name']) }}
                         </div>
-                        
+
                         <div class="col-md-4 col-12 form-group ">
                             {{ Form::label('duration', __('Duration'), ['class' => 'form-label col-12 ']) }}
                             {{ Form::number('duration', '', ['class' => 'form-control ', 'placeholder' => __('Package Duration (in days)'), 'id' => 'duration', 'min' => '1']) }}
                         </div>
-                        
+
                         <div class="col-md-4 col-12 form-group mandatory">
                             {{ Form::label('price', __('price') . '(' . $currency_symbol . ')', ['class' => 'form-label col-12 ']) }}
                             {{ Form::number('price', '', ['class' => 'form-control ', 'placeholder' => __('Package Price'), 'data-parsley-required' => 'true', 'id' => 'price', 'min' => '0']) }}
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <label for="description">{{ __("Description") }}</label>
+                            {{ Form::textarea('description','',['class'=>'form-control col-sm-12','id'=>'description','rows'=>5]) }}
                         </div>
 
                         <div id="property_limitation" class="col-md-3 col-sm-12 form-group form-check form-check-inline">
@@ -38,7 +43,7 @@
                             <input type="radio" id="add_property" name="typep" value="add_unlimited_property" class="m-2">
                             <label for="age1">{{ __('Unlimited') }}</label>
                         </div>
-                        
+
                         <div id="limitation_for_property" class="col-md-2 col-sm-12 form-group">
                             {{ Form::label('limit', __('Limit For Property'), ['class' => 'form-label col-12 ']) }}
                             {{ Form::number('property_limit', '', ['class' => 'form-control', 'type' => 'number', 'min' => '1', 'placeholder' => __('Limit For Property'), 'id' => 'propertylimit', 'min' => '0']) }}
@@ -51,7 +56,7 @@
                             <input type="radio" id="add_advertisement" name="typel" value="add_unlimited_advertisement" class="m-2">
                             <label for="age1">{{ __('Unlimited') }}</label>
                         </div>
-                        
+
                         <div id="limitation_for_advertisement" class="col-md-2 col-sm-12 form-group">
                             {{ Form::label('limit', __('Limit'), ['class' => 'form-label col-12 ']) }}
                             {{ Form::number('advertisement_limit', '', ['class' => 'form-control ', 'type' => 'number', 'min' => '1', 'placeholder' => __('Limit For Advertisement'), 'id' => 'advertisementlimit', 'min' => '0']) }}
@@ -139,6 +144,11 @@
                                     </div>
                                 </div>
 
+                                <div class="col-sm-12 form-group">
+                                    <label for="description">{{ __('Description') }}</label>
+                                    <textarea name="description" id="edit_description" class="form-control" rows="3"></textarea>
+                                </div>
+
                                 <div class="col-sm-12">
                                     <div class="col-md-12 col-12">
                                         <div class="form-group ">
@@ -160,7 +170,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-12 col-12">
                                     <div class="form-group mandatory">
                                         <label for="email" class="form-label col-12 ">{{ __('Status') }}</label>
@@ -195,7 +205,7 @@
                                             value="edit_limited_advertisement">
                                         <label for="age1">{{ __('Limited') }}</label>
                                         <br>
-                                        
+
                                         <input type="radio" id="edit_advertisement" name="edit_typel"
                                             value="edit_unlimited_advertisement">
                                         <label for="age1">{{ __('Unlimited') }}</label>
@@ -205,13 +215,13 @@
                                         {{ Form::text('advertisement_limit', '', ['class' => 'form-control ', 'placeholder' => 'limitation ', 'id' => 'advertisement_limit']) }}
                                     </div>
                                 </div>
-                                
+
 
                                 {{--<input type="hidden" name="edit_optionvalues" id="edit_optionvalues">
-    
+
                                 <div class="row pt-5" id="edit_elements">
                                 </div>--}}
-                                
+
                             </div>
                     </div>
 
@@ -251,9 +261,10 @@
 
 
         function setValue(id) {
-
+            console.log($("#" + id).parents('tr:first').find('td:nth-child(1)'));
             $("#edit_id").val(id);
             $("#edit_name").val($("#" + id).parents('tr:first').find('td:nth-child(2)').text());
+            $("#edit_description").val($("#" + id).parents('tr:first').find('td:nth-child(1)').find('span').attr('description'));
             $("#edit_duration").val($("#" + id).parents('tr:first').find('td:nth-child(3)').text());
             $("#edit_price").val($("#" + id).parents('tr:first').find('td:nth-child(4)').text());
             var status=($("#" + id).parents('tr:first').find('td:nth-child(7)').text());
@@ -303,7 +314,7 @@
                 }
             }
         });
-        
+
         $('input[type="radio"][name="edit_typel"]').click(function() {
             console.log("click");
             if ($(this).is(':checked')) {
@@ -337,7 +348,7 @@
                 }
             }
         });
-        
+
         $('input[type="radio"][name="typel"]').click(function() {
             console.log("click typel");
 

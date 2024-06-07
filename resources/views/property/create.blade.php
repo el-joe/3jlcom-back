@@ -37,7 +37,7 @@
                 <h3 class="card-header">{{ __('View Property') }}</h3>
                 <hr>
                 <div class="row card-body">
-                    
+
                     <div class="col-md-12 form-group mandatory">
                         {{ Form::label('title', __('Title'), ['class' => 'form-label col-12 ']) }}
                         {{ Form::text('title', '', ['class' => 'form-control ', 'placeholder' => __('Title'), 'required' => 'true', 'id' => 'title']) }}
@@ -47,7 +47,7 @@
                         {{ Form::label('price', __('price') . '(' . $currency_symbol . ')', ['class' => 'form-label col-12 ']) }}
                         {{ Form::number('price', '', ['class' => 'form-control ', 'placeholder' => __('Price'), 'required' => 'true', 'min' => '1', 'id' => 'price']) }}
                     </div>
-                    
+
                     <div class="col-md-6 form-group">
                         {{ Form::label('customer', __('Customer Name'), ['class' => 'form-label col-12 ']) }}
                         <select name="customer" class="select2 form-select form-control-sm" data-parsley-minSelect='1' id="customer" required='true'>
@@ -59,7 +59,7 @@
                             @endforeach
                         </select>
                     </div>
-                    
+
                     <div class="col-md-12 form-group mandatory">
                         {{ Form::label('description', __('Description'), ['class' => 'form-label col-12 ']) }}
 
@@ -69,7 +69,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class='col-md-6'>
 
             <div class="card">
@@ -87,7 +87,7 @@
                             @endforeach
                         </select>
                     </div>
-                    
+
                     <div class="col-md-12 col-12 form-group">
                         {{ Form::label('manufacturer', __('Manufacturer'), ['class' => 'form-label col-12 ']) }}
                         <select name="manufacturer" class="select2 form-select form-control-sm" id="manufacturer" required>
@@ -99,7 +99,7 @@
                             @endforeach
                         </select>
                     </div>
-                    
+
                     <div class="col-md-12 col-12 form-group">
                         {{ Form::label('model', __('Model'), ['class' => 'form-label col-12 ']) }}
                         <select name="model" class="select2 form-select form-control-sm" id="model" required>
@@ -111,7 +111,7 @@
                             @endforeach
                         </select>
                     </div>
-                    
+
                     <div class="col-md-12 col-12 form-group">
                         {{ Form::label('year', __('Year'), ['class' => 'form-label col-12 ']) }}
                         <select name="year" class="select2 form-select form-control-sm" id="year" required>
@@ -140,14 +140,14 @@
 
             </div>
         </div>
-        
+
         <div class='col-md-12'>
             <div class="card">
                 <h3 class="card-header">{{ __('Location') }}</h3>
                 <hr>
                 <div class="card-body">
                     <div class="row">
-                        
+
                         <div class='col-md-6'>
                             <div class="card col-md-12">
                                 <input id="searchInput" class="controls" type="text" placeholder="Enter a location"
@@ -157,7 +157,7 @@
                                 <!-- Google map -->
                             </div>
                         </div>
-                        
+
                         <div class='col-md-6'>
                             <div class="row">
                                 <div class="col-md-6 form-group">
@@ -185,12 +185,12 @@
                                         <option value=""></option>
                                     </select>
                                 </div>
-                                
+
                                 <div class="col-md-12 col-12 form-group">
                                     {{ Form::label('address', __('Address'), ['class' => 'form-label col-12 ']) }}
                                     {{ Form::textarea('address', '', ['class' => 'form-control ', 'placeholder' => __('Address'), 'rows' => '4', 'id' => 'address', 'autocomplete' => 'off']) }}
                                 </div>
-                                
+
                                 <div class="col-md-6">
                                     {{ Form::label('country', __('Country'), ['class' => 'form-label col-12 ']) }}
                                     {{ Form::text('country', '', ['class' => 'form-control ', 'placeholder' => __('Country'), 'id' => 'country']) }}
@@ -206,12 +206,12 @@
                                 </div>
                                 <div class="col-md-6 form-group  mandatory">
                                     {{ Form::label('latitude', __('Latitude'), ['class' => 'form-label col-12 ']) }}
-                                    {{ Form::number('latitude', '', ['class' => 'form-control ', 'placeholder' => __('Latitude'), 'required', 'id' => 'latitude', 'step' => 'any']) }}
+                                    {{ Form::number('latitude', '', ['class' => 'form-control ', 'placeholder' => __('Latitude'), 'id' => 'latitude', 'step' => 'any']) }}
 
                                 </div>
                                 <div class="col-md-6 form-group  mandatory">
                                     {{ Form::label('longitude', __('Longitude'), ['class' => 'form-label col-12 ']) }}
-                                    {{ Form::number('longitude', '', ['class' => 'form-control', 'placeholder' => __('Longitude'), 'required' => true, 'id' => 'longitude', 'step' => 'any']) }}
+                                    {{ Form::number('longitude', '', ['class' => 'form-control', 'placeholder' => __('Longitude') => true, 'id' => 'longitude', 'step' => 'any']) }}
 
                                 </div>
                             </div>
@@ -229,7 +229,7 @@
 
                         <div class="col-md-6 col-sm-12 card title_card">
                             {{ Form::label('title_image', __('Title Image'), ['class' => 'form-label col-12 ']) }}
-                            
+
                             <input type="file" class="filepond" id="filepond_title" name="title_image">
                         </div>
 

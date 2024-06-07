@@ -47,6 +47,7 @@ class PackageController extends Controller
 
 
             $package->name = $request->name;
+            $package->description = $request->description;
             $package->duration = isset($request->duration) ? $request->duration : 0;
             $package->price = $request->price;
             if (isset($request->typep)) {
@@ -123,9 +124,10 @@ class PackageController extends Controller
         $tempRow['type'] = '';
         $parameter_name_arr = [];
         foreach ($res as $row) {
-            $tempRow['id'] = $row->id;
+            $tempRow['id'] = "<span description='". $row->description ."'>$row->id<span>";
             $tempRow['name'] = $row->name;
             $tempRow['duration'] = $row->duration;
+            $tempRow['description'] = $row->description;
             $tempRow['price'] = $row->price;
             $tempRow['property_limit'] = isset($row->property_limit) ? $row->property_limit : __('Unlimited');
             $tempRow['advertisement_limit'] = isset($row->advertisement_limit) ? $row->advertisement_limit : __('Unlimited');
@@ -185,20 +187,22 @@ class PackageController extends Controller
             $name =  $request->edit_name;
             $duration =  $request->edit_duration;
             $price =  $request->edit_price;
+            $description =  $request->description;
 
             $package = Package::find($id);
 
             $package->name = $name;
             $package->duration = $duration;
             $package->price = $price;
+            $package->description = $description;
             $package->property_limit = isset($request->property_limit) ? $request->property_limit : NULL;
             $package->advertisement_limit = isset($request->advertisement_limit) ? $request->advertisement_limit : NULL;
             $package->update();
-            
+
             return back()->with('success', 'Package Successfully Update');
         }
     }
-    
+
     public function updateStatus(Request $request)
     {
         if (!has_permissions('update', 'property')) {
@@ -211,7 +215,7 @@ class PackageController extends Controller
             return response()->json($response);
         }
     }
-    
+
     /**
      * Remove the specified resource from storage.
      *
@@ -222,7 +226,7 @@ class PackageController extends Controller
     {
         //
     }
-    
+
     public function get_user_package_list()
     {
         $offset = 0;
@@ -273,12 +277,11 @@ class PackageController extends Controller
         $tempRow = array();
         $count = 1;
 
-
         $operate = '';
         $tempRow['type'] = '';
 
         foreach ($res as $row) {
-            $tempRow['id'] = $row->id;
+            $tempRow['id'] = "<span description='". $row->description ."'>$row->id<span>";
             $tempRow['start_date'] = date('d-m-Y', strtotime($row->start_date));
             $tempRow['end_date'] = date('d-m-Y', strtotime($row->end_date));
             $tempRow['subscription'] = $row->customer->subscription == 0 ?
