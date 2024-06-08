@@ -10,6 +10,9 @@ use Carbon\Carbon;
 class Chats extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
+
      public function sender()
     {
         return $this->belongsTo(Customer::class, 'sender_id');
@@ -31,5 +34,5 @@ class Chats extends Model
         return $value != "" ? url('') . config('global.IMG_PATH') . config('global.CHAT_AUDIO') . $value : '';
     }
 
-  
+
 }

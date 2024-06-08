@@ -1642,6 +1642,19 @@ class ApiController extends Controller
                                     'propertys_id' => $Property->id
                                 ]);
                             }
+
+                            try{
+                                $chatData = [
+                                    'property_id' => $request->property_id,
+                                    'sender_id' => $current_user,
+                                    'receiver_id' => $Property->customer[0]->id,
+                                    'message'=> 'لديك عرض جديد علي اعلانك ' . $request->offer . ' دينار'
+                                ];
+
+                                $chat = Chats::create($chatData);
+                            }catch(\Exception $e){
+                                //dd($e->getMessage());
+                            }
                         }
                         $response['error'] = false;
                         $response['message'] = 'Inquiry Send Succssfully';
