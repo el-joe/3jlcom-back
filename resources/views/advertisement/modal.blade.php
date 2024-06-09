@@ -22,7 +22,7 @@
             <label for="property_id">الاعلان</label>
             <select name="property_id" id="property_id" class="form-control" style="width: 100%">
                 @if(isset($adv))
-                    @foreach($customer->where('id',$adv->customer_id)->first()?->property ?? [] as $property)
+                    @foreach($customers->where('id',$adv->customer_id)->first()?->property ?? [] as $property)
                         <option value="{{ $property->id }}" {{ $adv->property_id == $property->id ? 'selected' : '' }}>{{ $property->title }}</option>
                     @endforeach
                 @endif
