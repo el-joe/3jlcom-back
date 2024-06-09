@@ -149,7 +149,7 @@ class AdvertisementController extends Controller
     public function edit($id)
     {
         $adv = Advertisement::with('customer.property','property')->find($id);
-        $customers = Customer::where('isActive',1)->whereHas('property',fn($q)=>$q->where('status',1))->get();
+        $customers = Customer::where('isActive',1)->with('property')->whereHas('property',fn($q)=>$q->where('status',1))->get();
         dd($customers);
         $html = view('advertisement.modal', get_defined_vars())->render();
         return response()->json($html);
