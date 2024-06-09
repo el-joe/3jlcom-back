@@ -143,7 +143,7 @@ class CustomersController extends Controller
                 $package = Package::where('id', $userPurchasedPackage->package_id)->first();
                 $tempRow['subscription_startdate'] = $userPurchasedPackage->start_date;
                 $tempRow['subscription_enddate'] = $userPurchasedPackage->end_date;
-                $subscriptionAnchor = "<a href='javascript:' data-bs-toggle='modal' data-subscription='" . $row->subscription . "' data-oldimage='" . $row->image . "' data-types='" . $row->id . "'  data-bs-target='#editModal'  onclick='setValue(this.id);' title='Edit Package'>" . $package->name . "</a>";
+                $subscriptionAnchor = "<a href='javascript:' id='". $row->id ."' data-bs-toggle='modal' data-subscription='" . $row->subscription . "' data-oldimage='" . $row->image . "' data-types='" . $row->id . "'  data-bs-target='#editModal'  onclick='setValue(this.id);' title='Edit Package'>" . $package->name . "</a>";
                 $tempRow['subscription'] = $subscriptionAnchor; // . ' (' . $package->property_limit . ')';
             }else{
                 $tempRow['subscription_startdate'] = '';
@@ -172,7 +172,6 @@ class CustomersController extends Controller
         if (!has_permissions('delete', 'customer')) {
             return back()->with('error', PERMISSION_ERROR_MSG);
         } else {
-            dd($request->all());
             Customer::where('id', $request->id)->update(['subscription' => 1]);
             UserPurchasedPackage::where('modal_id', $request->id)->delete();
             UserPurchasedPackage::create([
