@@ -172,6 +172,7 @@ class CustomersController extends Controller
         if (!has_permissions('delete', 'customer')) {
             return back()->with('error', PERMISSION_ERROR_MSG);
         } else {
+            dd($request->id);
             Customer::where('id', $request->id)->update(['subscription' => 1]);
             UserPurchasedPackage::where('modal_id', $request->id)->delete();
             UserPurchasedPackage::create([
