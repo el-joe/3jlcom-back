@@ -137,7 +137,7 @@ class CustomersController extends Controller
             $tempRow['role'] = $role;
             $tempRow['verified'] = $verified;
 
-            $userPurchasedPackage = UserPurchasedPackage::where('modal_id', (string)$row->id)->first();
+            $userPurchasedPackage = UserPurchasedPackage::where('modal_id', (string)$row->id)->last();
 
             if($userPurchasedPackage){
                 $package = Package::where('id', $userPurchasedPackage->package_id)->first();
