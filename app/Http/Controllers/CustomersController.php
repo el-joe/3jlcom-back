@@ -166,7 +166,7 @@ class CustomersController extends Controller
     {
         $package = Package::find($request->edit_user_package);
         $userPurchasedPackage = UserPurchasedPackage::where('modal_id', $request->id)->first();
-        $startDate = UserPurchasedPackage::where('modal_id', $request->id)->first()->start_date;
+        $startDate = UserPurchasedPackage::where('modal_id', $request->id)->first()?->start_date ?? Carbon::now();
         $purchaseExpired = $userPurchasedPackage->end_date > Carbon::now() ? false : true;
 
         if (!has_permissions('delete', 'customer')) {
