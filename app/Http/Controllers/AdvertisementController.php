@@ -74,7 +74,7 @@ class AdvertisementController extends Controller
         }
 
         // \DB::enableQueryLog(); // Enable query log
-        $sql = Advertisement::orderBy($sort, $order);
+        $sql = Advertisement::orderBy($sort, $order)->whereHas('property',fn($q)=>$q->where('status',1))->with('customer');
 
         if (isset($_GET['search']) && !empty($_GET['search'])) {
             $search = $_GET['search'];
