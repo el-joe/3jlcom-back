@@ -172,22 +172,21 @@ class CustomersController extends Controller
         if (!has_permissions('delete', 'customer')) {
             return back()->with('error', PERMISSION_ERROR_MSG);
         } else {
+            Customer::where('id', $request->id)->update(['subscription' => 1]);
+            UserPurchasedPackage::where('modal_id', $request->id)->delete();
+            UserPurchasedPackage::create([
+                'modal_id' => $request->id,
+                'package_id' => $request->edit_user_package,
+                'start_date' => Carbon::now(),
+                'end_date' => Carbon::now()->addDays($package->duration),
+            ]);
+
             switch ($request->input('action')) {
                 case 'renew':
-                    Customer::where('id', $request->id)->update(['subscription' => 1]);
-                    UserPurchasedPackage::where('modal_id', $request->id)->update([
-                        'package_id' => $request->edit_user_package,
-                        'start_date' => Carbon::now(),
-                        'end_date' => Carbon::now()->addDays($package->duration),
-                    ]);
                     return back()->with('success', 'Customer Package Updated Successfully');
                     break;
 
                 case 'change':
-                    UserPurchasedPackage::where('modal_id', $request->id)->update([
-                        'package_id' => $request->edit_user_package,
-                        'end_date' => Carbon::parse($startDate)->addDays($package->duration)
-                    ]);
                     return back()->with('success', 'Customer Package Changed Successfully');
                     break;
             }
