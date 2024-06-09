@@ -166,7 +166,7 @@ class CustomersController extends Controller
     {
         $package = Package::find($request->edit_user_package);
         $userPurchasedPackage = UserPurchasedPackage::where('modal_id', $request->id)->first();
-        $startDate = $userPurchasedPackage?->start_date ?? Carbon::now();
+        $startDate = $userPurchasedPackage?->start_date ?? Carbon::now()->format('Y-m-d');
         $purchaseExpired = $userPurchasedPackage?->end_date > Carbon::now() ? false : true;
 
         if (!has_permissions('delete', 'customer')) {
@@ -186,7 +186,7 @@ class CustomersController extends Controller
                 case 'change':
                     UserPurchasedPackage::where('modal_id', $request->id)->update([
                         'package_id' => $request->edit_user_package,
-                        'end_date' => Carbon::createFromFormat('Y-m-d', $startDate)->addDays($package->duration)
+                        'end_date' => Carbon::parse($startDate)->addDays($package->duration)
                     ]);
                     return back()->with('success', 'Customer Package Changed Successfully');
                     break;
