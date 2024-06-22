@@ -50,6 +50,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 use kornrunner\Blurhash\Blurhash;
 use App\Libraries\Paypal;
 use App\Libraries\Paypal_pro;
+use App\Models\SubscriptionRequest;
 use Illuminate\Support\Facades\Cache;
 use Tymon\JWTAuth\Claims\Issuer;
 
@@ -2204,6 +2205,37 @@ class ApiController extends Controller
             $response['message'] = "No data found!";
             $response['data'] = [];
         }
+        return response()->json($response);
+    }
+
+    public function requestPacakge(Request $request)
+    {
+        $customer = Customer::find($request->customer_id);
+        $package = Package::find($request->package_id);
+
+        if(!$customer){
+            return response()->json([
+                'error'=>true,
+                'message'=> 'Custoemr Not Exists'
+            ]);
+        }
+
+        if(!$package){
+            return response()->json([
+                'error'=>true,
+                'message'=> 'Package Not Exists'
+            ]);
+        }
+
+        SubscriptionRequest::firstOrCreate([
+            'customer_id'=>$request->customer_id,
+            'package_id'=>$request->package_id,
+            'status'=>'pending'
+        ]);
+
+        $response['error'] = false;
+        $response['message'] = "Request Sent Successfully!";
+
         return response()->json($response);
     }
 

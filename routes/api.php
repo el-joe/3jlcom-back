@@ -34,6 +34,7 @@ Route::get('get_cities', [ApiController::class, 'get_cities']);
 Route::get('get_areas', [ApiController::class, 'get_areas']);
 Route::get('get_advertisement', [ApiController::class, 'get_advertisement']);
 Route::get('get_package', [ApiController::class, 'get_package']);
+
 Route::get('get_articles', [ApiController::class, 'get_articles']);
 Route::get('get_count_by_cities_categoris', [ApiController::class, 'get_count_by_cities_categoris']);
 Route::get('get_property', [ApiController::class, 'get_property']);
@@ -46,6 +47,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('remove_post_images', [ApiController::class, 'remove_post_images']);
     Route::post('update_property_status', [ApiController::class, 'update_property_status']);
     Route::get('get_nearby_properties', [ApiController::class, 'get_nearby_properties']);
+
+    Route::post('request_package',[ApiController::class,'requestPacakge']);
 
     Route::post('set_property_total_click', [ApiController::class, 'set_property_total_click']);
 
