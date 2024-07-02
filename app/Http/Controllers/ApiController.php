@@ -468,11 +468,11 @@ class ApiController extends Controller
     //* START :: get_property   *//
     public function get_property(Request $request)
     {
-        $payload = JWTAuth::getPayload($this->bearerToken($request));
-        $current_user = (string)($payload['customer_id']);
-        $current_user=isset($request->current_user)?$request->current_user:$current_user;
+        $current_user=isset($request->current_user)?$request->current_user:'';
         $offset = isset($request->offset) ? $request->offset : 0;
         $limit = isset($request->limit) ? $request->limit : 10;
+        //$payload = JWTAuth::getPayload($this->bearerToken($request));
+        //$current_user = (string)($payload['customer_id']);
         $current_user_data = Customer::where('id',$current_user)->first();
         DB::enableQueryLog();
         $property = Property::with('customer')->with('user')->with('category:id,category,category_ar,manufacturer,installment,caysh,image')
