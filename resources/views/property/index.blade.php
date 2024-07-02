@@ -46,7 +46,7 @@
 
                     <div class="col-sm-6">
                         {{-- {{ Form::label('category', 'Category', ['class' => 'form-label col-12 text-center']) }} --}}
-                        <select class="form-select form-control-sm" id="category">
+                        <select class="form-select form-control-sm" id="categorySelect">
                             <option value="">{{ __('Select Category') }}</option>
                             @if (isset($category))
                                 @foreach ($category as $row)
@@ -146,7 +146,7 @@
 
         });
 
-        $('#category').on('change', function() {
+        $('#categorySelect').on('change', function() {
             $('#table_list').bootstrapTable('refresh');
 
         });
