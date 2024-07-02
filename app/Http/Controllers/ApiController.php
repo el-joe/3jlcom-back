@@ -511,13 +511,13 @@ class ApiController extends Controller
                     });
                 } else {
                 $response['error'] = false;
-                $response['message'] = "No data found!";
+                $response['message'] = "No data found! Role != 1";
                 $response['data'] = [];
                 return ($response);
                 }
             } else {
                 $response['error'] = false;
-                $response['message'] = "No data found!";
+                $response['message'] = "No data found! Not Logged In";
                 $response['data'] = [];
                 return ($response);
             }
@@ -632,7 +632,7 @@ class ApiController extends Controller
         } else {
 
             $response['error'] = false;
-            $response['message'] = "No data found!";
+            $response['message'] = "No data found! Promoted Else!";
             $response['data'] = [];
         }
 
@@ -646,14 +646,14 @@ class ApiController extends Controller
             $property = $property->whereIn('id', $ad_arr);
         } else {
             $response['error'] = false;
-            $response['message'] = "No data found!";
+            $response['message'] = "No data found! User Promoted Not Found";
             $response['data'] = [];
         }
 
         if (isset($request->promoted)) {
             if (!($property->Has('advertisement'))) {
                 $response['error'] = false;
-                $response['message'] = "No data found!";
+                $response['message'] = "No data found! Promoted not has Ads";
                 $response['data'] = [];
                 return ($response);
             }
@@ -709,7 +709,7 @@ class ApiController extends Controller
         } else {
 
             $response['error'] = false;
-            $response['message'] = "No data found!!!";
+            $response['message'] = "No data found! Is Empty";
             $response['data'] = [];
         }
         return ($response);
