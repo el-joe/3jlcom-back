@@ -193,7 +193,7 @@
                 search: p.search,
                 status: $('#status').val(),
                 type: $('#type').val(),
-                category: $('#category').val(),
+                category: $('#categorySelect').val() || $('#category').val(),
                 customer_id: $('#customerid').val(),
             };
         }
