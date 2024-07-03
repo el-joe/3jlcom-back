@@ -394,6 +394,7 @@ function get_property_details($result, $current_user = NULL)
             $customerData['twitter_link'] = $customer->twitter_link;
             $customerData['facebook_link'] = $customer->facebook_link;
             $customerData['customertotalpost'] = $customer->customertotalpost;
+            $customerData['total_views'] = Property::where('added_by',$customer->id)->sum('total_click');
 
             $tempRow['customer'] = $customerData;
 
