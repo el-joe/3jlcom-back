@@ -522,8 +522,10 @@ class ApiController extends Controller
                 return ($response);
             }
         } else {
-            $property = $property->whereHas('category', function ($q) {
-                    $q->where('caysh', 0);
+            $property = $property->whereHas('category', function ($q) use($request) {
+                    if($request->all != true){
+                        $q->where('caysh', 0);
+                    }
                 });
         }
 
