@@ -900,6 +900,41 @@ class ApiController extends Controller
 
                     $result = Property::with('customer')->with('category:id,category,category_ar,manufacturer,installment,caysh,image')->with('favourite')->with('parameters')
                         ->with('interested_users')->where('id', $Saveproperty->id)->get();
+
+                    if(isset($result[0])){
+                        $property = $result[0];
+
+                        UserInterest::all()->filter(function($q)use($property){
+                            $manufacturers = explode(',',$q->manufacturer_ids);
+                            $models = explode(',',$q->model_ids);
+                            $yearRange = explode(',',$q->year_range);
+                            $priceRange = explode(',',$q->price_range);
+                            $cities = explode(',',$q->city_ids);
+                            $areas = explode(',',$q->area_ids);
+
+                            $manufacturerCheck = in_array($property->manufacturer_id,$this->filterArray($manufacturers));
+                            $modelCheck = in_array($property->model_id,$this->filterArray($models));
+                            $yearRangeCheck = in_array($property->year?->year, $this->filterArray($yearRange));
+                            $priceRangeCheck = $property->price >= $priceRange[0] && $property->price <= $priceRange[1];
+                            $citiesCheck = in_array($property->city_id, $this->filterArray($cities));
+                            $areasCheck = in_array($property->area_id, $this->filterArray($areas));
+
+                            if($manufacturerCheck && $modelCheck && $yearRangeCheck && $priceRangeCheck && $citiesCheck && $areasCheck) return true;
+                        })->map(function($interest)use($property){
+                            $customer = $interest->user_id;
+
+                            Notifications::create([
+                                'title' => __('New Offer'),
+                                'message' => "هناك اعلان جديد لاقيها",
+                                'image' => '',
+                                'type' => '1',
+                                'send_type' => '0',
+                                'customers_id' => $customer,
+                                'propertys_id' => $property->id
+                            ]);
+                    });
+                    }
+
                     $property_details = get_property_details($result);
 
                     /*if(result['category']['id'] == '13'){
@@ -919,6 +954,10 @@ class ApiController extends Controller
             $response['message'] = $validator->errors()->first();
         }
         return response()->json($response);
+    }
+
+    function filterArray($arr){
+        return array_filter($arr,function($q){!empty($q);});
     }
     //* END :: post_property   *//
 
@@ -2767,7 +2806,7 @@ class ApiController extends Controller
             'action' => 'required|in:add,edit',
             'id' => 'required_if:action,=,edit',
             'manufacturer_ids'=> 'required',
-            'model_ids'=>'required',
+            // 'model_ids'=>'required',
             // 'city_ids'=>'required',
             // 'area_ids'=>'required',
             // 'price_range'=>'required',
