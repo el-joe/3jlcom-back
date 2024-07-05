@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Package;
 use App\Models\Setting;
 use App\Models\Slider;
+use App\Models\SubscriptionRequest;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PackageController extends Controller
@@ -20,6 +22,7 @@ class PackageController extends Controller
         $currency_symbol = Setting::where('type', 'currency_symbol')->pluck('data')->first();
         return view('packages.index', compact('currency_symbol'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -300,4 +303,102 @@ class PackageController extends Controller
         $bulkData['rows'] = $rows;
         return response()->json($bulkData);
     }
+
+
+
+
+
+
+
+    public function packageRequests()
+    {
+        return view('package-requests.index', get_defined_vars());
+    }
+
+
+    public function showRequests()
+    {
+        $offset = 0;
+        $limit = 10;
+        $sort = 'id';
+        $order = 'DESC';
+
+        if (isset($_GET['offset'])) {
+            $offset = $_GET['offset'];
+        }
+
+        if (isset($_GET['limit'])) {
+            $limit = $_GET['limit'];
+        }
+
+        if (isset($_GET['sort'])) {
+            $sort = $_GET['sort'];
+        }
+
+        if (isset($_GET['order'])) {
+            $order = $_GET['order'];
+        }
+
+        $sql = SubscriptionRequest::with('package','customer')->orderBy($sort, $order);
+
+        if (isset($_GET['search']) && !empty($_GET['search'])) {
+            $search = $_GET['search'];
+            $sql->where('id', 'LIKE', "%$search%")->orwhere('name', 'LIKE', "%$search%")->orwhere('duration', 'LIKE', "%$search%");
+        }
+
+        $total = $sql->count();
+
+        if (isset($_GET['limit'])) {
+            $sql->skip($offset)->take($limit);
+        }
+
+        $res = $sql->get();
+        $bulkData = array();
+        $bulkData['total'] = $total;
+        $rows = array();
+        $tempRow = array();
+        $count = 1;
+
+
+        $tempRow['type'] = '';
+
+        foreach ($res as $row) {
+            $statusColor = "bg-warning";
+            if($row->status == "accepted"){
+                $statusColor = "bg-success";
+            }elseif( $row->status == "refused"){
+                $statusColor = "bg-danger";
+            }
+
+            $tempRow['id'] = "<span>$row->id<span>";
+            $tempRow['customer'] = "<a href='/customer?id=". $row->customer_id ."' target='_blank'>" . $row->customer?->name . "</a>";
+            $tempRow['package'] = $row->package?->name;
+            $tempRow['status'] = "<span class='badge $statusColor'>". __($row->status) ."</span>";
+            $tempRow['date'] = Carbon::parse($row->created_at)->format('Y/m/d h:i A');
+            $operator = "<div class='d-flex gap-2 justify-content-center'>";
+            if($row->status === 'pending'){
+                $operator .= "<a href='/subscription-request/". $row->id ."/accepted' class='btn btn-xs btn-success' >قبول </a>";
+                $operator .= "<a href='/subscription-request/". $row->id ."/refused' class='btn btn-xs btn-danger' >رفض </a>";
+            }else{
+                $operator .= "-";
+            }
+            $operator .= "</div>";
+            $tempRow['operator'] = $operator;
+            $rows[] = $tempRow;
+            $count++;
+        }
+
+        $bulkData['rows'] = $rows;
+        return response()->json($bulkData);
+    }
+
+    function changeRequestStatus($id,$status) {
+        $sql = SubscriptionRequest::findOrFail($id);
+
+        $sql->status = $status;
+        $sql->save();
+
+        return redirect()->back()->with('success','تم التعديل بنجاح');
+    }
+
 }

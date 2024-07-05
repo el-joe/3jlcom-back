@@ -10,4 +10,12 @@ class SubscriptionRequest extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    function customer() {
+        return $this->belongsTo(Customer::class);
+    }
+
+    function package() {
+        return $this->belongsTo(Package::class);
+    }
 }

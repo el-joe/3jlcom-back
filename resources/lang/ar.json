@@ -12,6 +12,7 @@
     "Specification Name Ar": "الاسم بالعربية",
     "Create New Manufacturer": "إضافة ماركة جديدة",
     "Reason": "السبب",
+    "Date": "التاريخ",
     "Add New Package": "إضافة باقة جديدة",
     "Total Caysh": "إعلانات كيشها",
     "Total Sale": "سيارات للبيع",
@@ -261,5 +262,8 @@
     "New Car Listing Find": "تم اضافة اعلان جديد ( لاقيها )",
     "Car listing matches Find": "تم نشر إعلان جديد يتوافق مع خيارات بحثك!",
     "Require Ads Approval": "تأكيد الإعلان قبل النشر",
-    "Require Caysh Approval": "تأكيد كيشها قبل النشر"
+    "Require Caysh Approval": "تأكيد كيشها قبل النشر",
+    "accepted" : "تم القبول",
+    "refused" : "تم الرفض",
+    "pending" : "قيد الانتظار"
 }

@@ -154,6 +154,11 @@ Route::middleware(['auth', 'checklogin'])->group(function () {
         Route::post('advertisement-status', [AdvertisementController::class, 'updateStatus'])->name('advertisement.updateadvertisementstatus');
         Route::post('adv-status-update', [AdvertisementController::class, 'update'])->name('adv-status-update');
 
+        Route::get('package-requests', [PackageController::class,'packageRequests']);
+        Route::get('package_request_list', [PackageController::class, 'showRequests']);
+        Route::get('subscription-request/{id}/{status}', [PackageController::class, 'changeRequestStatus']);
+
+
         Route::resource('package', PackageController::class);
         Route::get('package_list', [PackageController::class, 'show']);
         Route::post('package-update', [PackageController::class, 'update']);
