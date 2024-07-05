@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Customer;
 use App\Models\Package;
 use App\Models\Setting;
 use App\Models\Slider;
 use App\Models\SubscriptionRequest;
+use App\Models\UserPurchasedPackage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -397,6 +399,16 @@ class PackageController extends Controller
 
         $sql->status = $status;
         $sql->save();
+
+        if($status === 'accepted'){
+            UserPurchasedPackage::create([
+                'modal_id' => $sql->customer_id,
+                'modal_type' => Customer::class,
+                'package_id' => $sql->package_id,
+                'start_date' => Carbon::now(),
+                'end_date' => Carbon::now()->addDays($sql->package->duration),
+            ]);
+        }
 
         return redirect()->back()->with('success','تم التعديل بنجاح');
     }
