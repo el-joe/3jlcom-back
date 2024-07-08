@@ -176,6 +176,7 @@ class CustomersController extends Controller
             UserPurchasedPackage::where('modal_id', $request->id)->delete();
             UserPurchasedPackage::create([
                 'modal_id' => $request->id,
+                'modal_type' => Customer::class,
                 'package_id' => $request->edit_user_package,
                 'start_date' => Carbon::now(),
                 'end_date' => Carbon::now()->addDays($package->duration),

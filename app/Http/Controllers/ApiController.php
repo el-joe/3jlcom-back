@@ -96,8 +96,11 @@ class ApiController extends Controller
 
         if (isset($request->user_id)) {
 
-            $data = UserPurchasedPackage::where('modal_id', (string)$request->user_id)->where('end_date', date('d'))->where('end_date', '!=', NULL)->get();
-            $customer = Customer::select('id')->where('subscription', '1')->with('user_purchased_package.package')->find((string)$request->user_id);
+            $data = UserPurchasedPackage::where('modal_id', (string)$request->user_id)
+                ->where('end_date', date('d'))->where('end_date', '!=', NULL)->get();
+
+            $customer = Customer::select('id')->where('subscription', '1')
+                ->with('user_purchased_package.package')->find((string)$request->user_id);
 
             if ($customer) {
                 if (count($data)) {
