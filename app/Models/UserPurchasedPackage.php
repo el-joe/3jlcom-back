@@ -11,6 +11,7 @@ class UserPurchasedPackage extends Model
 
     protected $casts = [
         'modal_id' => 'int',
+        'modal_type' => 'int',
         'package_id' => 'int',
         'used_limit_for_property' => 'int',
         'used_limit_for_advertisement' => 'int',
