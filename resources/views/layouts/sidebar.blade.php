@@ -133,6 +133,14 @@
                         </a>
                     </li>
 
+
+                    <li class="sidebar-item">
+                        <a href="{{ url('package-requests') }}" class='sidebar-link'>
+                            <i class="fas fa-archive"></i>
+                            <span class="menu-item">{{ __('Package Requests') }}</span>
+                        </a>
+                    </li>
+
                     <li class="sidebar-item">
                         <a href="{{ url('payment') }}" class='sidebar-link'>
                             <i class="fas fa-money-check-alt"></i>

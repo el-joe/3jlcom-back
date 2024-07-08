@@ -265,5 +265,6 @@
     "Require Caysh Approval": "تأكيد كيشها قبل النشر",
     "accepted" : "تم القبول",
     "refused" : "تم الرفض",
-    "pending" : "قيد الانتظار"
+    "pending" : "قيد الانتظار",
+    "Package Requests" : "طلبات الاشتراكات"
 }
