@@ -512,6 +512,7 @@ function get_property_details($result, $current_user = NULL)
                     'customer_id' => (int)$inquired_user->customers_id,
                     'customer_name' => $customer_data->name,
                     'customer_mobile' => $customer_data->mobile,
+                    'customer'=>$customer_data,
                     'offer' => $inquired_user->offer,
                     'status' => $inquired_user->status,
                     'created_at' => $inquired_user->created_at,
