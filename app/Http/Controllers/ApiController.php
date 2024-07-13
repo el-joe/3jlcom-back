@@ -1754,7 +1754,7 @@ class ApiController extends Controller
         if (!$validator->fails()) {
             $id = $request->userid;
 
-            $Notifications =  Notifications::whereRaw("FIND_IN_SET($id,customers_id)")->orwhere('send_type', '1')->orderBy('id', 'DESC')->get();
+            $Notifications =  Notifications::whereRaw("FIND_IN_SET($id,customers_id)")->orderBy('id', 'DESC')->get();
 
 
             if (!$Notifications->isEmpty()) {
