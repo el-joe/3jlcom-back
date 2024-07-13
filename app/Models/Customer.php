@@ -83,12 +83,12 @@ class Customer extends Authenticatable implements JWTSubject
 
     function usedPackageAdsLimit()
     {
-        return Advertisement::where('customer_id', $this->id)->whereBetween('created_at',$this->currentPackage()->start_date??now(), $this->currentPackage()->end_date??now())->count()??0;
+        return Advertisement::where('customer_id', $this->id)->whereBetween('created_at',[$this->currentPackage()->start_date??now(), $this->currentPackage()->end_date??now()])->count()??0;
     }
 
     function usedPackagePropertyLimit()
     {
-        return Property::where('customer_id', $this->id)->whereBetween('created_at',$this->currentPackage()->start_date??now(), $this->currentPackage()->end_date??now())->count()??0;
+        return Property::where('customer_id', $this->id)->whereBetween('created_at',[$this->currentPackage()->start_date??now(), $this->currentPackage()->end_date??now()])->count()??0;
     }
 
     // public function user_package(){

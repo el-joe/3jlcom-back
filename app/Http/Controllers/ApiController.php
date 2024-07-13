@@ -746,10 +746,8 @@ class ApiController extends Controller
             $payload = JWTAuth::getPayload($this->bearerToken($request));
             $current_user = (string)($payload['customer_id']);
 
-
-            $package = UserPurchasedPackage::where('modal_id', $current_user)->with(['package' => function ($q) {
-                $q->select('id', 'property_limit', 'advertisement_limit')->where('property_limit', '!=', NULL);
-            }])->first();
+            $customer = Customer::find($current_user);
+            $package = $customer->currentPackage()->load('package');
 
 
             $arr = 0;
