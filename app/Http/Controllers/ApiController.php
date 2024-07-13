@@ -111,6 +111,9 @@ class ApiController extends Controller
 
                 $tempRow['subscription'] = true;
                 $tempRow['package'] = $customer;
+                $tempRow['current_package'] = $customer->currentPackage()->load('package');
+                $tempRow['current_package']['used_ads'] = $customer->usedPackageAdsLimit();
+                $tempRow['current_package']['used_property'] = $customer->usedPackagePropertyLimit();
             } else {
                 $tempRow['subscription'] = false;
             }

@@ -75,6 +75,22 @@ class Customer extends Authenticatable implements JWTSubject
         return  $this->morphMany(UserPurchasedPackage::class, 'modal');
     }
 
+    function currentPackage()
+    {
+        $now = now();
+        return $this->user_purchased_package()->whereRaw("'$now' between user_purchased_packages.start_date and user_purchased_packages.end_date")->latest()->first();
+    }
+
+    function usedPackageAdsLimit()
+    {
+        return Advertisement::where('customer_id', $this->id)->whereBetween('created_at',$this->currentPackage()->start_date??now(), $this->currentPackage()->end_date??now())->count()??0;
+    }
+
+    function usedPackagePropertyLimit()
+    {
+        return Property::where('customer_id', $this->id)->whereBetween('created_at',$this->currentPackage()->start_date??now(), $this->currentPackage()->end_date??now())->count()??0;
+    }
+
     // public function user_package(){
     //     return $
     // }
