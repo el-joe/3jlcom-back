@@ -29,6 +29,6 @@ class Notifications extends Model
 
     function property()
     {
-        return $this->belongsTo(Property::class,'properties_id');
+        return $this->belongsTo(Property::class,'propertys_id');
     }
 }
