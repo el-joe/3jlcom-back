@@ -40,6 +40,7 @@ Route::get('get_count_by_cities_categoris', [ApiController::class, 'get_count_by
 Route::get('get_property', [ApiController::class, 'get_property']);
 
 Route::post('set_property_total_click', [ApiController::class, 'set_property_total_click']);
+Route::get('get_user_recommendation', [ApiController::class, 'get_user_recommendation']);
 
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('post_property', [ApiController::class, 'post_property']);
@@ -100,6 +101,5 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 
     Route::get('get_agents_details', [ApiController::class, 'get_agents_details']);
 
-    Route::get('get_user_recommendation', [ApiController::class, 'get_user_recommendation']);
 
 });
