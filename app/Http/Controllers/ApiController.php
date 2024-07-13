@@ -51,6 +51,7 @@ use kornrunner\Blurhash\Blurhash;
 use App\Libraries\Paypal;
 use App\Libraries\Paypal_pro;
 use App\Models\SubscriptionRequest;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Tymon\JWTAuth\Claims\Issuer;
 
@@ -2894,8 +2895,12 @@ class ApiController extends Controller
 
         $offset = isset($request->offset) ? $request->offset : 0;
         $limit = isset($request->limit) ? $request->limit : 10;
-        $payload = JWTAuth::getPayload($this->bearerToken($request));
-        $current_user = (string)($payload['customer_id']);
+        try{
+            $payload = JWTAuth::getPayload($this->bearerToken($request));
+            $current_user = (string)($payload['customer_id']);
+        }catch(Exception $e){
+            $current_user = $request->current_user;
+        }
         DB::enableQueryLog();
 
         $user_interest = UserInterest::where('user_id', $current_user)->first();
