@@ -933,7 +933,7 @@ class ApiController extends Controller
                                 'message' => "هناك اعلان جديد لاقيها",
                                 'image' => '',
                                 'type' => '1',
-                                'send_type' => '0',
+                                'send_type' => '1',
                                 'customers_id' => $customer,
                                 'propertys_id' => $property->id
                             ]);
@@ -1682,7 +1682,7 @@ class ApiController extends Controller
                                     'message' => $msg,
                                     'image' => '',
                                     'type' => '1',
-                                    'send_type' => '0',
+                                    'send_type' => '1',
                                     'customers_id' => $Property->customer[0]->id,
                                     'propertys_id' => $Property->id
                                 ]);
