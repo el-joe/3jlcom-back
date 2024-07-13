@@ -2923,11 +2923,11 @@ class ApiController extends Controller
                 $property = $property->whereIn('city_id', $city_ids);
             }
 
-            if ($user_interest->area_ids != '') {
+            // if ($user_interest->area_ids != '') {
 
-                $area_ids = explode(',', $user_interest->area_ids);
-                $property = $property->whereIn('area_id', $area_ids);
-            }
+            //     $area_ids = explode(',', $user_interest->area_ids);
+            //     $property = $property->whereIn('area_id', $area_ids);
+            // }
 
             /*if ($user_interest->year_range != '') {
 
