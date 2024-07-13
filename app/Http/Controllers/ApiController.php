@@ -1761,7 +1761,7 @@ class ApiController extends Controller
                 for ($i = 0; $i < count($Notifications); $i++) {
                     $Notifications[$i]->created = $Notifications[$i]->created_at->diffForHumans();
                     $Notifications[$i]->image  = ($Notifications[$i]->image != '') ? url('') . config('global.IMG_PATH') . config('global.NOTIFICATION_IMG_PATH') . $Notifications[$i]->image : '';
-                    $Notifications[$i]->property = $Notifications[$i]->property ? get_property_details(colelct([$Notifications[$i]->property]))[0] : null;
+                    $Notifications[$i]->property = $Notifications[$i]->property ? get_property_details(collect([$Notifications[$i]->property]))[0] : null;
                 }
                 $response['error'] = false;
                 $response['data'] = $Notifications;
