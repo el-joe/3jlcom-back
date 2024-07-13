@@ -1754,13 +1754,14 @@ class ApiController extends Controller
         if (!$validator->fails()) {
             $id = $request->userid;
 
-            $Notifications =  Notifications::whereRaw("FIND_IN_SET($id,customers_id)")->orwhere('send_type', '1')->orderBy('id', 'DESC')->get();
+            $Notifications =  Notifications::with('property')->whereRaw("FIND_IN_SET($id,customers_id)")->orwhere('send_type', '1')->orderBy('id', 'DESC')->get();
 
 
             if (!$Notifications->isEmpty()) {
                 for ($i = 0; $i < count($Notifications); $i++) {
                     $Notifications[$i]->created = $Notifications[$i]->created_at->diffForHumans();
                     $Notifications[$i]->image  = ($Notifications[$i]->image != '') ? url('') . config('global.IMG_PATH') . config('global.NOTIFICATION_IMG_PATH') . $Notifications[$i]->image : '';
+                    $Notifications[$i]->property = $Notifications[$i]->property ?? null;
                 }
                 $response['error'] = false;
                 $response['data'] = $Notifications;

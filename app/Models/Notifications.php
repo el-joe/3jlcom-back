@@ -26,4 +26,9 @@ class Notifications extends Model
         'updated_at',
         'deleted_at'
     ];
+
+    function property()
+    {
+        return $this->belongsTo(Property::class,'properties_id');
+    }
 }
