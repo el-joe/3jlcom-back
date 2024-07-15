@@ -25,20 +25,20 @@
                       {{__('Create New Parameter')}}
                     </button>
                 </h4>
-            
+
                 <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         {{-- {{!! Form::open(['url' => route('parameters.store')]) !!}} --}}
                         {!! Form::open(['files' => true, 'data-parsley-validate']) !!}
 
                         <div class="row">
-                            
+
                             <div class="col-sm-12 col-md-6 form-group mandatory">
                                 {{ Form::label('type', __('Specification Name'), ['class' => 'form-label text-center text-primary']) }}
 
                                 {{ Form::text('parameter', '', ['class' => 'form-control', 'placeholder' => __('Specification Name'), 'data-parsley-required' => 'true']) }}
                             </div>
-                            
+
                             <div class="col-sm-12 col-md-6 form-group mandatory">
                                 {{ Form::label('type', __('Specification Name Ar'), ['class' => 'form-label text-center text-primary']) }}
 
@@ -63,7 +63,7 @@
                                     <option value="dropdown">Dropdown</option>
                                     <option value="radiobutton">Radio Button</option>
                                     <option value="checkbox">Checkbox</option>
-                                    <option value="file">File</option>
+                                    {{-- <option value="file">File</option> --}}
                                     <option value="number">Number</option>
                                 </select>
 
@@ -81,7 +81,7 @@
                             <input type="hidden" name="optionvalues" id="optionvalues">
 
                             <div class="row pt-2" id="elements"></div>
-                            
+
                             <div class="col-sm-4 d-flex justify-content-start pt-3">
                                 {{ Form::submit(__('Save'), ['class' => 'btn btn-block btn-primary me-1 mb-1', 'id' => 'btn_submit']) }}
                             </div>
@@ -187,7 +187,7 @@
                                     <option value="dropdown">Dropdown</option>
                                     <option value="radiobutton">Radio Button</option>
                                     <option value="checkbox">Checkbox</option>
-                                    <option value="file">File</option>
+                                    {{-- <option value="file">File</option> --}}
                                     <option value="number">Number</option>
                                 </select>
 
@@ -299,7 +299,7 @@
                 }
             });
         }
-        
+
         function queryParams(p) {
             return {
                 sort: p.sort,
@@ -403,7 +403,7 @@
                     '<div class="row">' +
                     ' <div class="col-12">' +
                     ' <button type="button" class="btn btn-block btn-success mb-1" id="button-editon2"> + ' +
-                    'Click to Add values' + 
+                    'Click to Add values' +
                     '</button>' +
                     '</div>' +
                     ' </div>' +
