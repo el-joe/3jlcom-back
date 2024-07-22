@@ -2908,7 +2908,10 @@ class ApiController extends Controller
 
         $property = Property::with('customer')->with('user')->with('category:id,category,category_ar,manufacturer,installment,caysh,image')
         ->with('favourite')->with('parameters')->with('interested_users')
-        ->where('status', 1);
+        ->where('status', 1)
+        ->whereHas('category', function ($q) {
+            $q->where('caysh', 0);
+        });
 
         if ($user_interest) {
 
