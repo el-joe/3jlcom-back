@@ -244,13 +244,15 @@ class ApiController extends Controller
         })->where('verification_code',$request->verification_code)
         ->first();
 
+        dd($customer);
+
         if(!$customer){
             return response()->json([
                 'status'=>false,
                 'msg'=>'invalid code'
             ]);
         }
-        $customer = Customer::find($customer->id);
+
         $token = JWTAuth::fromUser($customer);
 
         try {
