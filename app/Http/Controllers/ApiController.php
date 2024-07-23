@@ -253,6 +253,24 @@ class ApiController extends Controller
         $customer = Customer::find($customer->id);
         $token = JWTAuth::fromUser($customer);
 
+        try {
+            if (!$token) {
+                return response()->json([
+                    'status'=>false,
+                    'msg'=>'invalid code'
+                ]);
+                } else {
+                $customer->api_token = $token;
+
+                $customer->update();
+            }
+        } catch (JWTException $e) {
+            return response()->json([
+                'status'=>false,
+                'msg'=>'invalid code'
+            ]);
+        }
+
         return response()->json([
             'status'=>true,
             'token'=> $token,
