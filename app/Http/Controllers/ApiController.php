@@ -237,32 +237,30 @@ class ApiController extends Controller
             'verification_code'=>'required'
         ]);
 
-        $customer = Customer::where(function($q)use($request){
+        $credentials = Customer::where(function($q)use($request){
             $withoutPlus = str_replace('+','',$request->mobile);
             $withPlus = '+'.$withoutPlus;
             $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
         })->where('verification_code',$request->verification_code)
         ->first();
 
-        if(!$customer){
+        if(!$credentials){
             return response()->json([
                 'status'=>false,
                 'msg'=>'invalid code'
             ]);
         }
 
-        $token = JWTAuth::loginUsingId($customer->id);
-        return ($token);
         try {
+            $token = JWTAuth::fromUser($credentials);
             if (!$token) {
                 return response()->json([
                     'status'=>false,
                     'msg'=>'invalid code'
                 ]);
-                } else {
-                $customer->api_token = $token;
-
-                $customer->save();
+            } else {
+                $credentials->api_token = $token;
+                $credentials->update();
             }
         } catch (JWTException $e) {
             return response()->json([
@@ -274,7 +272,7 @@ class ApiController extends Controller
         return response()->json([
             'status'=>true,
             'token'=> $token,
-            'data'=>$customer
+            'data'=>$credentials
         ]);
     }
 
