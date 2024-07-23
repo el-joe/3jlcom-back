@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+Route::post('send-mobile-code',[ApiController::class, 'sendVerificationCodeToPhone']);
+Route::post('verify-mobile-code',[ApiController::class, 'verifyCode']);
+
+
+
 Route::get('stripe/status', [ApiController::class, 'stripeStatus']);
 
 // Artisan::call('migrate');

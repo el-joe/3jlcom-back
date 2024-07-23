@@ -145,6 +145,118 @@ class ApiController extends Controller
     }
     //* END :: Get System Setting   *//
 
+    function sendSMS($phone,$code)
+    {
+        $curl = curl_init();
+
+        $params = [
+            'senderid'  =>  '3jlcom',
+            'numbers'   =>  $phone,
+            'accname'   =>  'ajlcom',
+            'AccPass'   =>  'hB5rC2fP1qS1aE0x',
+            'msg'       =>  "$code is your verification code for 3jlcom APP"
+        ];
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://josmsservice.com/SMSServices/Clients/Prof/RestSingleSMS/SendSMS?' . http_build_query( $params ) ,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        return $response;
+    }
+
+    function sendVerificationCodeToPhone(Request $request) {
+        $request->validate([
+            'mobile'=>'required'
+        ]);
+
+        $customer = Customer::where(function($q)use($request){
+            $withoutPlus = str_replace('+','',$request->mobile);
+            $withPlus = '+'.$withoutPlus;
+            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
+        })->first();
+
+        $code = rand(100000,999999);
+
+        if(!$customer){
+            $customer = new Customer();
+            $customer->name = "";
+            $customer->firebase_id = "";
+            $customer->email = "";
+            $customer->mobile = $request->mobile;
+            $customer->address = "";
+            $customer->logintype = 1;
+            $customer->isActive = 1;
+            $customer->about = "";
+            $customer->instagram_link = "";
+            $customer->twitter_link = "";
+            $customer->facebook_link = "";
+            $customer->pinterest_link = "";
+            $customer->save();
+
+            $start_date =  Carbon::now();
+            $package = Package::find(1);
+
+            if ($package && $package->status == 1) {
+                $user_package = new UserPurchasedPackage();
+                $user_package->modal()->associate($customer);
+                $user_package->modal_id = (string)$customer->id;
+                $user_package->package_id = 1;
+                $user_package->start_date = $start_date;
+                $user_package->end_date =  Carbon::now()->addDays($package->duration);
+                $user_package->save();
+                $customer->subscription = 1;
+            }
+        }
+
+        $customer->verification_code = $code;
+        $customer->save();
+
+        $this->sendSMS($customer->phone,$customer->verification_code);
+
+        return response()->json([
+            'status'=>true
+        ]);
+    }
+
+    function verifyCode(Request $request) {
+        $request->validate([
+            'mobile'=>'required',
+            'verification_code'=>'required'
+        ]);
+
+        $customer = Customer::where(function($q)use($request){
+            $withoutPlus = str_replace('+','',$request->mobile);
+            $withPlus = '+'.$withoutPlus;
+            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
+        })->where('verification_code',$request->verification_code)
+        ->first();
+
+        if(!$customer){
+            return response()->json([
+                'status'=>false,
+                'msg'=>'invalid code'
+            ]);
+        }
+
+        $token = JWTAuth::fromUser($customer);
+
+        return response()->json([
+            'status'=>true,
+            'token'=> $token,
+            'data'=>$customer
+        ]);
+    }
+
     //* START :: user_signup   *//
     public function user_signup(Request $request)
     {
