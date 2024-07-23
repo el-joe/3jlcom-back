@@ -147,28 +147,13 @@ class ApiController extends Controller
 
     function sendSMS($phone,$code)
     {
-        $curl = curl_init();
-
         $numbers = str_replace('+','',$phone);
         $msg = "$code is your verification code for 3jlcom APP";
 
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://josmsservice.com/SMSServices/Clients/Prof/RestSingleSMS_General/SendSMS?senderid=3jlcom&numbers=$numbers&accname=ajlcom&AccPass=hB5rC2fP1qS1aE0x&msg=$msg" ,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'GET',
-        ));
+        $url = "https://josmsservice.com/SMSServices/Clients/Prof/RestSingleSMS_General/SendSMS?senderid=3jlcom&numbers=$numbers&accname=ajlcom&AccPass=hB5rC2fP1qS1aE0x&msg=$msg";
+        $response = Http::get($url);
 
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-
-        return "https://josmsservice.com/SMSServices/Clients/Prof/RestSingleSMS_General/SendSMS?senderid=3jlcom&numbers=$numbers&accname=ajlcom&AccPass=hB5rC2fP1qS1aE0x&msg=$msg";
-        return $response;
+        return $response->body();
     }
 
     function sendVerificationCodeToPhone(Request $request) {
