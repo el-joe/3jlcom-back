@@ -217,12 +217,16 @@ class ApiController extends Controller
 
         $customer->verification_code = $code;
         $customer->save();
+
+        $res = '';
+
         if(!$check){
-            return $this->sendSMS($customer->phone,$customer->verification_code);
+            $res = $this->sendSMS($customer->phone,$customer->verification_code);
         }
 
         return response()->json([
-            'status'=>true
+            'status'=>true,
+            'data'=>$res
         ]);
     }
 
