@@ -251,7 +251,7 @@ class ApiController extends Controller
             ]);
         }
 
-        $token = JWTAuth::fromUser($customer);
+        $token = JWTAuth::loginUsingId($customer->id);
         return ($token);
         try {
             if (!$token) {
