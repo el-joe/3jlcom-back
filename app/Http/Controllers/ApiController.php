@@ -149,16 +149,11 @@ class ApiController extends Controller
     {
         $curl = curl_init();
 
-        $params = [
-            'senderid'  =>  '3jlcom',
-            'numbers'   =>  str_replace('+','',$phone),
-            'accname'   =>  'ajlcom',
-            'AccPass'   =>  'hB5rC2fP1qS1aE0x',
-            'msg'       =>  "$code is your verification code for 3jlcom APP"
-        ];
+        $numbers = str_replace('+','',$phone);
+        $msg = "$code is your verification code for 3jlcom APP";
 
         curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://josmsservice.com/SMSServices/Clients/Prof/RestSingleSMS/SendSMS?' . http_build_query( $params ) ,
+        CURLOPT_URL => "https://josmsservice.com/SMSServices/Clients/Prof/RestSingleSMS_General/SendSMS?senderid=3jlcom&numbers=$numbers&accname=ajlcom&AccPass=hB5rC2fP1qS1aE0x&msg=$msg" ,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
