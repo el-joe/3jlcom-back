@@ -262,7 +262,7 @@ class ApiController extends Controller
                 } else {
                 $customer->api_token = $token;
 
-                $customer->update();
+                $customer->save();
             }
         } catch (JWTException $e) {
             return response()->json([
