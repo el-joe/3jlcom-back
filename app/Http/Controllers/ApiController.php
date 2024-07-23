@@ -151,7 +151,7 @@ class ApiController extends Controller
 
         $params = [
             'senderid'  =>  '3jlcom',
-            'numbers'   =>  $phone,
+            'numbers'   =>  "$phone",
             'accname'   =>  'ajlcom',
             'AccPass'   =>  'hB5rC2fP1qS1aE0x',
             'msg'       =>  "$code is your verification code for 3jlcom APP"
