@@ -166,6 +166,8 @@ class ApiController extends Controller
         $response = curl_exec($curl);
 
         curl_close($curl);
+
+        return 'https://josmsservice.com/SMSServices/Clients/Prof/RestSingleSMS_General/SendSMS?senderid=3jlcom&numbers=$numbers&accname=ajlcom&AccPass=hB5rC2fP1qS1aE0x&msg=$msg';
         return $response;
     }
 
