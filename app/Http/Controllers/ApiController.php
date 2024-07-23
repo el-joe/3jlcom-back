@@ -250,7 +250,7 @@ class ApiController extends Controller
                 'msg'=>'invalid code'
             ]);
         }
-
+        $customer = Customer::find($customer->id);
         $token = JWTAuth::fromUser($customer);
 
         return response()->json([
