@@ -227,7 +227,8 @@ class ApiController extends Controller
         $credentials = Customer::where(function($q)use($request){
             $withoutPlus = str_replace('+','',$request->mobile);
             $withPlus = '+'.$withoutPlus;
-            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
+            $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
+            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->where('mobile',$withoutCountryCodeAndPlus);
         })->where('verification_code',$request->verification_code)
         ->first();
 
