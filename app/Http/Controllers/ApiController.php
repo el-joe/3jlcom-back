@@ -231,12 +231,13 @@ class ApiController extends Controller
         $withPlus = '+'.$withoutPlus;
         $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
 
+        dd($withoutCountryCodeAndPlus);
 
         $credentials = Customer::where(function($q)use($withoutPlus,$withPlus,$withoutCountryCodeAndPlus){
             $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
         })->where('verification_code',$request->verification_code)
         ->first();
-        dd($credentials);
+
         if(!$credentials){
             return response()->json([
                 'status'=>false,
