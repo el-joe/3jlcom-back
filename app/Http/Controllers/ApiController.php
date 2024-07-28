@@ -161,16 +161,19 @@ class ApiController extends Controller
             'mobile'=>'required'
         ]);
 
-        $customer = Customer::where(function($q)use($request){
-            $withoutPlus = str_replace('+','',$request->mobile);
-            $withPlus = '+'.$withoutPlus;
-            $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
+        $withoutPlus = str_replace('+','',$request->mobile);
+        $withPlus = '+'.$withoutPlus;
+        $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
+
+        $customer = Customer::where(function($q)use($withPlus,$withoutPlus,$withoutCountryCodeAndPlus){
             $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
         })->first();
 
-        $check = ($request->mobile == '123456789' || $request->mobile == '1234567899');
+        $check1 = ($request->mobile == '123456789' || $request->mobile == '1234567899');
+        $check2 = ($withoutPlus == '123456789' || $withoutPlus == '1234567899');
+        $check3 = ($withoutCountryCodeAndPlus == '123456789' || $withoutCountryCodeAndPlus == '1234567899');
 
-        $code = $check ? '123456' : rand(100000,999999);
+        $code = ($check1||$check2||$check3) ? '123456' : rand(100000,999999);
 
         if(!$customer){
             $customer = new Customer();
@@ -208,7 +211,7 @@ class ApiController extends Controller
 
         $res = '';
 
-        if(!$check){
+        if($code != '123456'){
             $res = $this->sendSMS($customer->mobile,$customer->verification_code);
         }
 
@@ -224,10 +227,12 @@ class ApiController extends Controller
             'verification_code'=>'required'
         ]);
 
-        $credentials = Customer::where(function($q)use($request){
-            $withoutPlus = str_replace('+','',$request->mobile);
-            $withPlus = '+'.$withoutPlus;
-            $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
+        $withoutPlus = str_replace('+','',$request->mobile);
+        $withPlus = '+'.$withoutPlus;
+        $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
+
+
+        $credentials = Customer::where(function($q)use($withoutPlus,$withPlus,$withoutCountryCodeAndPlus){
             $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
         })->where('verification_code',$request->verification_code)
         ->first();
