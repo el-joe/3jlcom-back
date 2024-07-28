@@ -163,7 +163,7 @@ class ApiController extends Controller
 
         $withoutPlus = str_replace('+','',$request->mobile);
         $withPlus = '+'.$withoutPlus;
-        $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
+        $withoutCountryCodeAndPlus = substr($withoutPlus,3);
 
         $customer = Customer::where(function($q)use($withPlus,$withoutPlus,$withoutCountryCodeAndPlus){
             $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
@@ -228,9 +228,9 @@ class ApiController extends Controller
         ]);
 
         $withoutPlus = str_replace('+','',$request->mobile);
+        $withPlus = '+'.$withoutPlus;
         $withoutCountryCodeAndPlus = substr($withoutPlus,3);
 
-        dd($withoutCountryCodeAndPlus);
 
         $credentials = Customer::where(function($q)use($withoutPlus,$withPlus,$withoutCountryCodeAndPlus){
             $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
