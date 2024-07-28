@@ -173,12 +173,25 @@ class AdvertisementController extends Controller
             $response['message'] = PERMISSION_ERROR_MSG;
             return response()->json($response);
         } else {
+            $newStatus = $request->edit_adv_status;
             if($request->id != null){
+
                 $adv = Advertisement::find($request->id);
+
+                $prevStatus = $adv->status;
 
                 $adv->update($request->all()+['status'=>$request->edit_adv_status]);
             }else{
                 $adv = Advertisement::create($request->all()+['type'=>'Slider','is_enable'=>1,'status'=>$request->edit_adv_status]);
+                $prevStatus = NULL;
+            }
+
+            if($newStatus == 0 && $newStatus != $prevStatus){
+                $currentPackage = $adv->customer->currentPackage();
+
+                if($currentPackage){
+                    $currentPackage->update(['used_limit_for_advertisement'=>$currentPackage->used_limit_for_advertisement+1]);
+                }
             }
 
             // dd($adv);
