@@ -228,8 +228,7 @@ class ApiController extends Controller
         ]);
 
         $withoutPlus = str_replace('+','',$request->mobile);
-        $withPlus = '+'.$withoutPlus;
-        $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
+        $withoutCountryCodeAndPlus = substr($withoutPlus,3);
 
         dd($withoutCountryCodeAndPlus);
 
