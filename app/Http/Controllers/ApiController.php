@@ -164,7 +164,8 @@ class ApiController extends Controller
         $customer = Customer::where(function($q)use($request){
             $withoutPlus = str_replace('+','',$request->mobile);
             $withPlus = '+'.$withoutPlus;
-            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
+            $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
+            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
         })->first();
 
         $check = ($request->mobile == '123456789' || $request->mobile == '1234567899');
