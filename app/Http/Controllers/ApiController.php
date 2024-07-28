@@ -228,7 +228,7 @@ class ApiController extends Controller
             $withoutPlus = str_replace('+','',$request->mobile);
             $withPlus = '+'.$withoutPlus;
             $withoutCountryCodeAndPlus = substr($withoutPlus,0,3);
-            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->where('mobile',$withoutCountryCodeAndPlus);
+            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
         })->where('verification_code',$request->verification_code)
         ->first();
 
