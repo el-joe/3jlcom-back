@@ -634,7 +634,7 @@ class ApiController extends Controller
 
         $parameters = $request->parameters;
 
-        if (isset($caysh) && $caysh == 1) {
+        if (isset($caysh) && $caysh == 1 && !$request->has('promoted')) {
             if(isset($request->current_user) && $request->current_user != null){
                 if ($current_user_data->role == 1) {
                     $property = $property->whereHas('category', function ($q) {
