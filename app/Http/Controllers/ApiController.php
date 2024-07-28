@@ -236,7 +236,7 @@ class ApiController extends Controller
             $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
         })->where('verification_code',$request->verification_code)
         ->first();
-
+        dd($credentials);
         if(!$credentials){
             return response()->json([
                 'status'=>false,
