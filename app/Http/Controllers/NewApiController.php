@@ -45,9 +45,7 @@ class NewApiController extends Controller
             'advertisement'
         ])
             ->whereHas('category', function ($q) use ($request) {
-                if ($request->all != true) {
-                    $q->where('caysh', 0);
-                }
+                $q->where('caysh', 0);
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->orderBy('id', 'DESC')
@@ -95,9 +93,7 @@ class NewApiController extends Controller
             'advertisement'
         ])
             ->whereHas('category', function ($q) use ($request) {
-                if ($request->all != true) {
-                    $q->where('caysh', 0);
-                }
+                $q->where('caysh', 0);
             })
             ->orderBy('id', 'DESC');
 
@@ -191,9 +187,7 @@ class NewApiController extends Controller
             'advertisement'
         ])
             ->whereHas('category', function ($q) use ($request) {
-                if ($request->all != true) {
-                    $q->where('caysh', 0);
-                }
+                $q->where('caysh', 0);
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->where('installment', 1)
@@ -235,9 +229,7 @@ class NewApiController extends Controller
             'advertisement'
         ])
             ->whereHas('category', function ($q) use ($request) {
-                if ($request->all != true) {
-                    $q->where('caysh', 0);
-                }
+                $q->where('caysh', 0);
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->orderBy('total_click', 'DESC')
@@ -278,9 +270,7 @@ class NewApiController extends Controller
             'advertisement'
         ])
             ->whereHas('category', function ($q) use ($request) {
-                if ($request->all != true) {
-                    $q->where('caysh', 0);
-                }
+                $q->where('caysh', 0);
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->withCount('favourite')
@@ -382,11 +372,7 @@ class NewApiController extends Controller
             'interested_users',
             'advertisement'
         ])
-            ->whereHas('category', function ($q) use ($request) {
-                if ($request->all != true) {
-                    $q->where('caysh', 0);
-                }
-            })
+            ->whereHas('category')
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->orderBy('id', 'DESC');
 
