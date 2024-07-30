@@ -1231,8 +1231,6 @@ class ApiController extends Controller
 
                             $update_data = AssignParameters::find($AssignParameters);
 
-                            dd($property,$parameter,$AssignParameters,$update_data);
-
                             if ($update_data) {
                                 // print_r($update_data->toArray());
                                 // $AssignParameters->modal()->associate($property);
@@ -1269,6 +1267,33 @@ class ApiController extends Controller
 
 
                                 $update_data->save();
+                            }else{
+                                $AssignParameters = new AssignParameters();
+
+                                $AssignParameters->modal()->associate($property);
+
+                                $AssignParameters->parameter_id = $parameter['parameter_id'];
+
+                                if ($request->hasFile('parameters.' . $key . '.value')) {
+
+                                    $profile = $request->file('parameters.' . $key . '.value');
+                                    $imageName = microtime(true) . "." . $profile->getClientOriginalExtension();
+                                    $profile->move($destinationPathforparam, $imageName);
+                                    $AssignParameters->value = $imageName;
+                                } else if (filter_var($parameter['value'], FILTER_VALIDATE_URL)) {
+                                    $ch = curl_init($parameter['value']);
+                                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                                    $fileContents = curl_exec($ch);
+                                    curl_close($ch);
+
+                                    $filename = microtime(true) . basename($parameter['value']);
+                                    file_put_contents($destinationPathforparam . '/' . $filename, $fileContents);
+                                    $AssignParameters->value = $filename;
+                                } else {
+                                    $AssignParameters->value = $parameter['value'];
+                                    $AssignParameters->value_ar = $parameter['value'];
+                                }
+                                $AssignParameters->save();
                             }
                         }
 
