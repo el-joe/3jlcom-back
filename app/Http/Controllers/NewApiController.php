@@ -49,6 +49,7 @@ class NewApiController extends Controller
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->orderBy('id', 'DESC')
+            ->take(6)
             ->get();
 
         if (!$result->isEmpty()) {
@@ -150,7 +151,9 @@ class NewApiController extends Controller
             }
         }
 
-        $result = $result->get();
+        $result = $result
+            ->take(6)
+            ->get();
 
         if (!$result->isEmpty()) {
             $property_details = get_property_details($result);
@@ -192,6 +195,7 @@ class NewApiController extends Controller
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->where('installment', 1)
             ->orderBy('id', 'DESC')
+            ->take(6)
             ->get();
 
         if (!$result->isEmpty()) {
@@ -233,6 +237,7 @@ class NewApiController extends Controller
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->orderBy('total_click', 'DESC')
+            ->take(6)
             ->get();
 
         if (!$result->isEmpty()) {
@@ -275,6 +280,7 @@ class NewApiController extends Controller
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->withCount('favourite')
             ->orderBy('favourite_count', 'DESC')
+            ->take(6)
             ->get();
 
         if (!$result->isEmpty()) {
@@ -316,7 +322,8 @@ class NewApiController extends Controller
             'advertisement'
         ])
         ->when($city,fn($q)=>$q->where('city_id', $city))
-        ->orderBy('id', 'DESC');
+        ->orderBy('id', 'DESC')
+        ->take(6);
 
         if (isset($request->current_user) && $request->current_user != null) {
             if ($current_user_data->role == 1) {
@@ -374,7 +381,8 @@ class NewApiController extends Controller
         ])
             ->whereHas('category')
             ->when($city,fn($q)=>$q->where('city_id', $city))
-            ->orderBy('id', 'DESC');
+            ->orderBy('id', 'DESC')
+            ->take(6);
 
 
         $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get();
@@ -425,7 +433,8 @@ class NewApiController extends Controller
                     'advertisement'
                 ])
                 ->when($city,fn($q)=>$q->where('city_id', $city))
-                ->orderBy('id', 'DESC');
+                ->orderBy('id', 'DESC')
+                ->take(6);
             }
         ])
             ->where('status', '1')
