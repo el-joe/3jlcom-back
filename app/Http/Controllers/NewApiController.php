@@ -446,8 +446,7 @@ class NewApiController extends Controller
                     'advertisement'
                 ])
                 ->when($city,fn($q)=>$q->where('city_id', $city))
-                ->orderBy('id', 'DESC')
-                ->take(6);
+                ->orderBy('id', 'DESC');
             }
         ])
             ->where('status', '1')
