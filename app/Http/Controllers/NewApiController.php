@@ -451,13 +451,16 @@ class NewApiController extends Controller
             }
         ])
             ->where('status', '1')
-            ->get()->map(function($cat){
-                $newData = $cat;
-                $newData['properties'] = get_property_details($cat->properties);
+            ->get();
 
-                return $newData;
-            });
+        $newData = [];
 
-        return $categories;
+        foreach ($categories as $i=>$cat) {
+            $newData[$i]['id'] = $cat->id;
+            $newData[$i]['category_ar'] = $cat->category_ar;
+            $newData[$i]['properties'] = get_property_details($cat->properties);
+        }
+
+        return $newData;
     }
 }
