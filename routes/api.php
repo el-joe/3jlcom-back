@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\NewApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -45,7 +46,7 @@ Route::get('get_articles', [ApiController::class, 'get_articles']);
 Route::get('get_count_by_cities_categoris', [ApiController::class, 'get_count_by_cities_categoris']);
 Route::get('get_property', [ApiController::class, 'get_property']);
 
-Route::get('app-home',[ApiController::class, 'appHome']);
+Route::get('app-home',[NewApiController::class, 'appHome']);
 
 Route::post('set_property_total_click', [ApiController::class, 'set_property_total_click']);
 Route::get('get_user_recommendation', [ApiController::class, 'get_user_recommendation']);
