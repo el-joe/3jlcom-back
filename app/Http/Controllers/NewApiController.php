@@ -430,36 +430,34 @@ class NewApiController extends Controller
     {
         $city = $request->city_id;
 
-        $categories = Category::with([
-            'properties' => function ($query) use ($city) {
-                $query->with([
-                    'customer',
-                    'user',
-                    'category:id,category,category_ar,manufacturer,installment,caysh,image',
-                    'manufacturer:id,manufacturer,manufacturer_ar,image',
-                    'model:id,model',
-                    'year:id,year',
-                    'city:id,city,city_ar',
-                    'favourite',
-                    'parameters',
-                    'interested_users',
-                    'advertisement'
-                ])
-                ->when($city,fn($q)=>$q->where('city_id', $city))
-                ->orderBy('id', 'DESC')
-                ->take(6);
-            }
-        ])
-            ->where('status', '1');
+        $categories = Category::where('status', '1')->get();
 
-        dd($categories->toSql());
 
         $newData = [];
 
         foreach ($categories as $i=>$cat) {
             $newData[$i]['id'] = $cat->id;
             $newData[$i]['category_ar'] = $cat->category_ar;
-            $newData[$i]['properties'] = get_property_details($cat->properties);
+            $properties = Property::with([
+                'customer',
+                'user',
+                'category:id,category,category_ar,manufacturer,installment,caysh,image',
+                'manufacturer:id,manufacturer,manufacturer_ar,image',
+                'model:id,model',
+                'year:id,year',
+                'city:id,city,city_ar',
+                'favourite',
+                'parameters',
+                'interested_users',
+                'advertisement'
+            ])
+            ->when($city,fn($q)=>$q->where('city_id', $city))
+            ->orderBy('id', 'DESC')
+            ->where('category_id',$cat->id)
+            ->take(6)
+            ->get();
+
+            $newData[$i]['properties'] = get_property_details($properties);
         }
 
         return $newData;
