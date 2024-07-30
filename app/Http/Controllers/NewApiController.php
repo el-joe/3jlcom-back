@@ -71,12 +71,7 @@ class NewApiController extends Controller
 
     function recommendation($request)
     {
-        try {
-            $payload = JWTAuth::getPayload($this->bearerToken($request));
-            $current_user = (string)($payload['customer_id']);
-        } catch (Exception $e) {
-            $current_user = $request->current_user;
-        }
+        $current_user = $request->current_user;
 
         $user_interest = UserInterest::where('user_id', $current_user)->first();
 
