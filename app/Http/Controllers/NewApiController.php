@@ -73,6 +73,15 @@ class NewApiController extends Controller
     {
         $current_user = $request->current_user;
 
+        if(empty($current_user)){
+
+            $response['error'] = false;
+            $response['message'] = "No data found! Is Empty";
+            $response['data'] = [];
+
+            return $response;
+        }
+
         $user_interest = UserInterest::where('user_id', $current_user)->first();
 
         $result = Property::with([
@@ -299,7 +308,16 @@ class NewApiController extends Controller
     {
         $city = $request->city_id;
 
-        $current_user = $request->current_user ?? '';
+        $current_user = $request->current_user;
+
+        if(empty($current_user)){
+
+            $response['error'] = false;
+            $response['message'] = "No data found! Is Empty";
+            $response['data'] = [];
+
+            return $response;
+        }
 
         $current_user_data = Customer::where('id', $current_user)->first();
 
