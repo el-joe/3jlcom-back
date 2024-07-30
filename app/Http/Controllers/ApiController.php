@@ -1227,9 +1227,12 @@ class ApiController extends Controller
                             // print_r($parameter);
                             // echo $property->id;
                             // return false;
-                            $AssignParameters = AssignParameters::where('modal_id', $property->id)->where('parameter_id', $parameter['parameter_id'])->pluck('id');
-                            // echo $AssignParameters[0] . 'idddd';
-                            $update_data = AssignParameters::find($AssignParameters[0]??0);
+                            $AssignParameters = AssignParameters::where('modal_id', $property->id)->where('parameter_id', $parameter['parameter_id'])->pluck('id')->first();
+
+                            $update_data = AssignParameters::find($AssignParameters);
+
+                            dd($AssignParameters,$update_data);
+
                             if ($update_data) {
                                 // print_r($update_data->toArray());
                                 // $AssignParameters->modal()->associate($property);
