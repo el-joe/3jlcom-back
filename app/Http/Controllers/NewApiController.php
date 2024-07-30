@@ -447,11 +447,12 @@ class NewApiController extends Controller
                 ])
                 ->when($city,fn($q)=>$q->where('city_id', $city))
                 ->orderBy('id', 'DESC')
-                ->take(20);
+                ->take(6);
             }
         ])
-            ->where('status', '1')
-            ->get();
+            ->where('status', '1');
+
+        dd($categories->toSql());
 
         $newData = [];
 
