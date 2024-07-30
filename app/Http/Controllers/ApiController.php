@@ -1223,6 +1223,8 @@ class ApiController extends Controller
                         }
                         // print_r($request->parameters);
 
+                        AssignParameters::where('modal_id', $property->id)->whereNotIn('parameter_id', collect($request->parameters)->pluck('parameter_id'))->delete();
+
                         foreach ($request->parameters as $key => $parameter) {
                             // print_r($parameter);
                             // echo $property->id;
