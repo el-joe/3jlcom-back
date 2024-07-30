@@ -348,14 +348,10 @@ function get_property_details($result, $current_user = NULL)
     $tempRow = array();
     $adminData = array();
     $count = 1;
-    $rows1 = array();
-    $tempRow1 = array();
-    $count1 = 1;
 
     foreach ($result as $row) {
 
         $customer = $row->customer->first();
-        $user = $row->user->first();
 
         $tempRow['id'] = $row->id;
         $tempRow['title'] = $row->title;
@@ -546,7 +542,6 @@ function get_property_details($result, $current_user = NULL)
 
 
         $arr = [];
-        $arr1 = [];
 
         if ($row->advertisement) {
             $tempRow['advertisement'] = $row->advertisement;
@@ -600,7 +595,6 @@ function get_property_details($result, $current_user = NULL)
 
 
         $rows[] = $tempRow;
-        $parameters[] = $arr;
         $count++;
     }
     return $rows;
