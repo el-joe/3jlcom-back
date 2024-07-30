@@ -1231,7 +1231,7 @@ class ApiController extends Controller
 
                             $update_data = AssignParameters::find($AssignParameters);
 
-                            dd($AssignParameters,$update_data);
+                            dd($property,$parameter,$AssignParameters,$update_data);
 
                             if ($update_data) {
                                 // print_r($update_data->toArray());
