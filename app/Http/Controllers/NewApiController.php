@@ -20,7 +20,7 @@ class NewApiController extends Controller
         $data['installments'] = $this->installments($request);
         $data['top_rated'] = $this->topRated($request);
         $data['most_liked'] = $this->mostLiked($request);
-        $data['caysh'] = $this->caysh($request);
+        // $data['caysh'] = $this->caysh($request);
         $data['promoted'] = $this->promoted($request);
         $data['categories'] = $this->categories($request);
 
@@ -432,10 +432,13 @@ class NewApiController extends Controller
 
         $categories = Category::where('status', '1')->get();
 
+        $current_user = $request->current_user ?? 0;
+        $current_user_data = Customer::where('id', $current_user)->first();
 
         $newData = [];
 
         foreach ($categories as $i=>$cat) {
+            if((!$current_user_data || $current_user_data->role != 1) && $cat->id == 13){continue;}
             $newData[$i]['id'] = $cat->id;
             $newData[$i]['category_ar'] = $cat->category_ar;
             $properties = Property::with([
