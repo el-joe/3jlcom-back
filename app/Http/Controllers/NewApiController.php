@@ -20,7 +20,7 @@ class NewApiController extends Controller
         $data['installments'] = $this->installments($request);
         $data['top_rated'] = $this->topRated($request);
         $data['most_liked'] = $this->mostLiked($request);
-        // $data['caysh'] = $this->caysh($request);
+        $data['caysh'] = $this->caysh($request);
         $data['promoted'] = $this->promoted($request);
         $data['categories'] = $this->categories($request);
 
