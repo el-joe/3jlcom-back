@@ -62,7 +62,7 @@ class HomeController extends Controller
             $list['total_categories'] = Category::all()->count();
             $list['total_customer'] = Customer::all()->count();
             $list['total_agents'] = Customer::where('role','1')->get()->count();
-            
+
             // =============== NEW =============== //
             $today = now();
             $startDate = $today->copy()->startOfMonth();
@@ -71,11 +71,11 @@ class HomeController extends Controller
             $sellproperties = Property::whereHas('category', function ($q) {
                 $q->where('category', 'Cars For Sale');
                 })->whereBetween('created_at', [$startDate, $endDate])->orderBy('created_at')->get();
-                
+
             $rentproperties = Property::whereHas('category', function ($q) {
                 $q->where('category', 'Car Rental');
             })->whereBetween('created_at', [$startDate, $endDate])->orderBy('created_at')->get();
-                
+
             $cayshproperties = Property::whereHas('category', function ($q) {
                 $q->where('caysh', 1);
             })->whereBetween('created_at', [$startDate, $endDate])->orderBy('created_at')->get();
@@ -92,7 +92,7 @@ class HomeController extends Controller
 
             // Loop through each day of the current month
             for ($day = $startDate->copy(); $day->lte($endDate); $day->addDay()) {
-                // data related Month 
+                // data related Month
                 $sellmonthSeries = array_fill(0, 12, 0); // Initialize an array with 12 zeroes for each month
 
                 // Loop through each property and update the counts in $sellmonthSeries
@@ -169,7 +169,7 @@ class HomeController extends Controller
                 array_push($sellcountForCurrentDay, $countForMonth);
                 $currentDates[] = '"' . Carbon::parse($day)->format('Y-m-d') . '"';
             }
-                
+
             // Prepare the chart data
             $chartData = [
                 'rentmonthSeries' => $rentmonthSeries,
@@ -186,7 +186,7 @@ class HomeController extends Controller
                 'currentDates' => $currentDates,
                 'currentDate' => "[" . Carbon::now()->format('Y-m-d') . "]"
             ];
-            
+
             // Categories Chart
             $get_category = Category::withCount('properties')->where('status','1')->get();
             $category_name = array();
@@ -196,9 +196,9 @@ class HomeController extends Controller
                 array_push($category_name, "'" . $value->category_ar . "'");
                 array_push($category_count, $value->properties_count);
             }
-            
+
             // ================= END NEW ===================== //
-            
+
             $property = Property::select(DB::raw("COUNT(*) as count"), DB::raw("DATE_FORMAT(created_at, '%M %Y') as month"))
                 ->whereYear('created_at', date('Y'))
                 ->groupBy(DB::raw("YEAR(created_at)"), DB::raw("MONTH(created_at)"))
@@ -221,7 +221,7 @@ class HomeController extends Controller
             return view('home', compact('chartData', 'category_name', 'category_count', 'list', 'settings', 'property_labels', 'property_data', 'properties', 'userData', 'properties_data'));
         }
     }
-    
+
     public function blank_dashboard()
     {
         return view('blank_home');
@@ -231,7 +231,7 @@ class HomeController extends Controller
     {
         return view('change_password.index');
     }
-    
+
     public function changeprofile()
     {
         return view('change_profile.index');
@@ -269,18 +269,14 @@ class HomeController extends Controller
         $users->update();
         return back()->with('success', 'Password Change Successfully');
     }
-    
+
     function update_profile(Request $request)
     {
         $id = Auth::id();
-        $role = Auth::user()->type;
 
-        $users = User::find($id);
-        if ($role == 0) {
-            $users->name  = $request->name;
-            $users->email  = $request->email;
-        }
-        $users->update();
+        $users = User::findOrFail($id);
+
+        $users->update($request->all());
         return back()->with('success', 'Profile Updated Successfully');
     }
 
