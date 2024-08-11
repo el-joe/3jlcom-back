@@ -23,6 +23,7 @@ class Customer extends Authenticatable implements JWTSubject
         'email',
         'firebase_id',
         'mobile',
+        'about_me',
         'profile',
         'address',
         'fcm_id',

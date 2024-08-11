@@ -433,35 +433,10 @@ class ApiController extends Controller
             $customer =  Customer::find($id);
 
             if (!empty($customer)) {
-                if (isset($request->name)) {
-                    $customer->name = ($request->name) ? $request->name : '';
-                }
-                if (isset($request->email)) {
-                    $customer->email = ($request->email) ? $request->email : '';
-                }
-                if (isset($request->mobile)) {
-                    $customer->mobile = ($request->mobile) ? $request->mobile : '';
-                }
 
-                if (isset($request->instagram_link)) {
-                    $customer->instagram_link = ($request->instagram_link) ? $request->instagram_link : '';
-                }
-
-
-                if (isset($request->twitter_link)) {
-                    $customer->twitter_link = ($request->twitter_link) ? $request->twitter_link : '';
-                }
-
-
-                if (isset($request->facebook_link)) {
-                    $customer->facebook_link = ($request->facebook_link) ? $request->facebook_link : '';
-                }
-
-
-                if (isset($request->pinterest_link)) {
-                    $customer->pinterest_link = ($request->pinterest_link) ? $request->pinterest_link : '';
-                }
-
+                $customer->update($request->only([
+                    'name','email','mobile','address','about_me','facebook_link','twitter_link','instagram_link','pinterest_link'
+                ]));
 
                 if (isset($request->fcm_id)) {
                     $token_exist = Usertokens::where('fcm_id', $request->fcm_id)->get();
@@ -475,9 +450,6 @@ class ApiController extends Controller
                     $customer->fcm_id = ($request->fcm_id) ? $request->fcm_id : '';
                 }
 
-                if (isset($request->address)) {
-                    $customer->address = ($request->address) ? $request->address : '';
-                }
 
                 if (isset($request->firebase_id)) {
                     $customer->firebase_id = ($request->firebase_id) ? $request->firebase_id : '';

@@ -273,10 +273,14 @@ class HomeController extends Controller
     function update_profile(Request $request)
     {
         $id = Auth::id();
+        $role = Auth::user()->type;
 
-        $users = User::findOrFail($id);
-
-        $users->update($request->all());
+        $users = User::find($id);
+        if ($role == 0) {
+            $users->name  = $request->name;
+            $users->email  = $request->email;
+        }
+        $users->update();
         return back()->with('success', 'Profile Updated Successfully');
     }
 
