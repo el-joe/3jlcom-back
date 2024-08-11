@@ -436,9 +436,9 @@ class ApiController extends Controller
 
                 $customer->update($request->only([
                     'name','email','mobile','address','facebook_link','twitter_link','instagram_link','pinterest_link'
-                ]+[
+                ])+[
                     "about"=>$request->about ?? $request->about_me
-                ]));
+                ]);
 
                 if (isset($request->fcm_id)) {
                     $token_exist = Usertokens::where('fcm_id', $request->fcm_id)->get();
