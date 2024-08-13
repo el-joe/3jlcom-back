@@ -1891,6 +1891,38 @@ class ApiController extends Controller
     //* END :: set_property_inquiry   *//
 
     //* START :: get_notification_list   *//
+
+    function notifications_count(Request $request) {
+        try{
+            $payload = JWTAuth::getPayload($this->bearerToken($request));
+            $current_user = (string)($payload['customer_id']);
+        }catch(Exception $e){
+            $current_user = $request->current_user;
+        }
+
+        $customer = Customer::findOrFail($current_user);
+
+        return response()->json(['count'=>$customer->unreaded_notifications_count]);
+
+    }
+
+    function mark_as_read(Request $request) {
+        try{
+            $payload = JWTAuth::getPayload($this->bearerToken($request));
+            $current_user = (string)($payload['customer_id']);
+        }catch(Exception $e){
+            $current_user = $request->current_user;
+        }
+
+        $customer = Customer::findOrFail($current_user);
+
+        $customer->unreaded_notifications_count = 0;
+        $customer->save();
+
+        return response()->json(['count'=>0]);
+
+    }
+
     public function get_notification_list(Request $request)
     {
         $validator = Validator::make($request->all(), [

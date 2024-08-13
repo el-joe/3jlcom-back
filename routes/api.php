@@ -106,6 +106,9 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 
     Route::get('get_notification_list', [ApiController::class, 'get_notification_list']);
 
+    Route::get('notifications_count',[ApiController::class, 'notifications_count']);
+    Route::get('mark_as_read',[ApiController::class, 'mark_as_read']);
+
     Route::get('get_limits', [ApiController::class, 'get_limits']);
 
     Route::get('get_agents_details', [ApiController::class, 'get_agents_details']);
