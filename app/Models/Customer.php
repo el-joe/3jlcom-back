@@ -33,6 +33,7 @@ class Customer extends Authenticatable implements JWTSubject
         'twitter_link',
         'facebook_link',
         'instagram_link',
+        'unreaded_notifications_count'
     ];
 
     protected $casts = [

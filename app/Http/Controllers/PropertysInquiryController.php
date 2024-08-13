@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Notifications;
 use App\Models\PropertysInquiry;
 use App\Models\Setting;
@@ -228,6 +229,13 @@ class PropertysInquiryController extends Controller
                         'customers_id' => $PropertysInquiry->customer->id,
                         'propertys_id' => $PropertysInquiry->id
                     ]);
+
+                    $_customer = Customer::find($PropertysInquiry->customer->id);
+
+                    if($_customer){
+                        $_customer->increment('unreaded_notifications_count');
+                    }
+
                 }
             }
             $response['error'] = false;

@@ -231,6 +231,8 @@ class AdvertisementController extends Controller
                     'customers_id' => $adv->customer->id,
                     'propertys_id' => $adv->id
                 ]);
+
+                $adv->customer->increment('unreaded_notifications_count');
             }
 
             return back()->with('success', 'Property status update Successfully');

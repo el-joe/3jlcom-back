@@ -109,6 +109,13 @@ class NotificationController extends Controller
                     'propertys_id' => isset($propertys_id) ? $propertys_id : 0
                 ]);
 
+                $_customer = Customer::find($user_id);
+
+                if($_customer){
+                    $_customer->increment('unreaded_notifications_count');
+                }
+
+
                 $img = ($imageName != '') ? url('') . config('global.IMG_PATH') . config('global.NOTIFICATION_IMG_PATH') . $imageName : "";
                 // dd($fcm_ids);
 

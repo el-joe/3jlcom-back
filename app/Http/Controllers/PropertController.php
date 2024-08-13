@@ -792,6 +792,13 @@ class PropertController extends Controller
                         'customers_id' => $Property->customer[0]->id,
                         'propertys_id' => $Property->id
                     ]);
+
+                    $_customer = Customer::find($Property->customer[0]->id);
+
+                    if($_customer){
+                        $_customer->increment('unreaded_notifications_count');
+                    }
+
                 }
             }
             $response['error'] = false;
