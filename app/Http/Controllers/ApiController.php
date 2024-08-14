@@ -92,7 +92,7 @@ class ApiController extends Controller
                 }
 
             } else {*/
-                $tempRow[$row->type] = $row->data;
+            $tempRow[$row->type] = $row->data;
             //}
         }
 
@@ -124,12 +124,12 @@ class ApiController extends Controller
         $tempRow['languages'] = $language;
         DB::enableQueryLog();
 
-          $tempRow['min_price']= DB::table('propertys')
+        $tempRow['min_price'] = DB::table('propertys')
             ->selectRaw('MIN(CAST(price AS DECIMAL(10, 2))) as min_price')
             ->value('min_price');
 
 
-      $tempRow['max_price']= DB::table('propertys')
+        $tempRow['max_price'] = DB::table('propertys')
             ->selectRaw('MAX(CAST(price AS DECIMAL(10, 2))) as min_price')
             ->value('min_price');
 
@@ -146,9 +146,9 @@ class ApiController extends Controller
     }
     //* END :: Get System Setting   *//
 
-    function sendSMS($phone,$code)
+    function sendSMS($phone, $code)
     {
-        $numbers = str_replace('+','',$phone);
+        $numbers = str_replace('+', '', $phone);
         $msg = "$code is your verification code for 3jlcom APP";
 
         $url = "https://josmsservice.com/SMSServices/Clients/Prof/RestSingleSMS_General/SendSMS?senderid=3jlcom&numbers=$numbers&accname=ajlcom&AccPass=hB5rC2fP1qS1aE0x&msg=$msg";
@@ -157,28 +157,29 @@ class ApiController extends Controller
         return $response->body();
     }
 
-    function sendVerificationCodeToPhone(Request $request) {
+    function sendVerificationCodeToPhone(Request $request)
+    {
         $request->validate([
-            'mobile'=>'required'
+            'mobile' => 'required'
         ]);
 
-        $mobile = str_replace('9620','962',$request->mobile);
+        $mobile = str_replace('9620', '962', $request->mobile);
 
-        $withoutPlus = str_replace('+','',$mobile);
-        $withPlus = '+'.$withoutPlus;
-        $withoutCountryCodeAndPlus = substr($withoutPlus,3);
+        $withoutPlus = str_replace('+', '', $mobile);
+        $withPlus = '+' . $withoutPlus;
+        $withoutCountryCodeAndPlus = substr($withoutPlus, 3);
 
-        $customer = Customer::where(function($q)use($withPlus,$withoutPlus,$withoutCountryCodeAndPlus){
-            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
+        $customer = Customer::where(function ($q) use ($withPlus, $withoutPlus, $withoutCountryCodeAndPlus) {
+            $q->where('mobile', $withoutPlus)->orWhere('mobile', $withPlus)->orWhere('mobile', $withoutCountryCodeAndPlus);
         })->first();
 
         $check1 = ($mobile == '123456789' || $mobile == '1234567899');
         $check2 = ($withoutPlus == '123456789' || $withoutPlus == '1234567899');
         $check3 = ($withoutCountryCodeAndPlus == '123456789' || $withoutCountryCodeAndPlus == '1234567899');
 
-        $code = ($check1||$check2||$check3) ? '123456' : rand(100000,999999);
+        $code = ($check1 || $check2 || $check3) ? '123456' : rand(100000, 999999);
 
-        if(!$customer){
+        if (!$customer) {
             $customer = new Customer();
             $customer->name = "";
             $customer->firebase_id = "";
@@ -214,38 +215,39 @@ class ApiController extends Controller
 
         $res = '';
 
-        if($code != '123456'){
-            $res = $this->sendSMS($customer->mobile,$customer->verification_code);
+        if ($code != '123456') {
+            $res = $this->sendSMS($customer->mobile, $customer->verification_code);
         }
 
         return response()->json([
-            'status'=>true,
-            'data'=>$res
+            'status' => true,
+            'data' => $res
         ]);
     }
 
-    function verifyCode(Request $request) {
+    function verifyCode(Request $request)
+    {
         $request->validate([
-            'mobile'=>'required',
-            'verification_code'=>'required'
+            'mobile' => 'required',
+            'verification_code' => 'required'
         ]);
 
-        $mobile = str_replace('9620','962',$request->mobile);
+        $mobile = str_replace('9620', '962', $request->mobile);
 
-        $withoutPlus = str_replace('+','',$mobile);
-        $withPlus = '+'.$withoutPlus;
-        $withoutCountryCodeAndPlus = substr($withoutPlus,3);
+        $withoutPlus = str_replace('+', '', $mobile);
+        $withPlus = '+' . $withoutPlus;
+        $withoutCountryCodeAndPlus = substr($withoutPlus, 3);
 
 
-        $credentials = Customer::where(function($q)use($withoutPlus,$withPlus,$withoutCountryCodeAndPlus){
-            $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
-        })->where('verification_code',$request->verification_code)
-        ->first();
+        $credentials = Customer::where(function ($q) use ($withoutPlus, $withPlus, $withoutCountryCodeAndPlus) {
+            $q->where('mobile', $withoutPlus)->orWhere('mobile', $withPlus)->orWhere('mobile', $withoutCountryCodeAndPlus);
+        })->where('verification_code', $request->verification_code)
+            ->first();
 
-        if(!$credentials){
+        if (!$credentials) {
             return response()->json([
-                'status'=>false,
-                'msg'=>'invalid code'
+                'status' => false,
+                'msg' => 'invalid code'
             ]);
         }
 
@@ -253,8 +255,8 @@ class ApiController extends Controller
             $token = JWTAuth::fromUser($credentials);
             if (!$token) {
                 return response()->json([
-                    'status'=>false,
-                    'msg'=>'invalid code'
+                    'status' => false,
+                    'msg' => 'invalid code'
                 ]);
             } else {
                 $credentials->api_token = $token;
@@ -262,15 +264,15 @@ class ApiController extends Controller
             }
         } catch (JWTException $e) {
             return response()->json([
-                'status'=>false,
-                'msg'=>'invalid code'
+                'status' => false,
+                'msg' => 'invalid code'
             ]);
         }
 
         return response()->json([
-            'status'=>true,
-            'token'=> $token,
-            'data'=>$credentials
+            'status' => true,
+            'token' => $token,
+            'data' => $credentials
         ]);
     }
 
@@ -280,7 +282,7 @@ class ApiController extends Controller
         $validator = Validator::make($request->all(), [
             // 'verification_code' => 'required',
             'mobile' => 'required',
-            'firebase_id'=>'required'
+            'firebase_id' => 'required'
         ]);
 
         if (!$validator->fails()) {
@@ -290,10 +292,10 @@ class ApiController extends Controller
             $mobile = $request->mobile;
             // $code = $request->verification_code;
 
-            $user = Customer::where(function($q)use($mobile){
-                $withoutPlus = str_replace('+','',$mobile);
-                $withPlus = '+'.$withoutPlus;
-                $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
+            $user = Customer::where(function ($q) use ($mobile) {
+                $withoutPlus = str_replace('+', '', $mobile);
+                $withPlus = '+' . $withoutPlus;
+                $q->where('mobile', $withoutPlus)->orWhere('mobile', $withPlus);
             })->where('firebase_id', $firebase_id)->get();
 
             if ($user->isEmpty()) {
@@ -380,10 +382,10 @@ class ApiController extends Controller
                 $response['token'] = $token;
                 $response['data'] = $credentials;
             } else {
-                $credentials = Customer::where(function($q)use($mobile){
+                $credentials = Customer::where(function ($q) use ($mobile) {
                     $withoutPlus = ltrim($mobile, '+');
-                    $withPlus = '+'.$withoutPlus;
-                    $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus);
+                    $withPlus = '+' . $withoutPlus;
+                    $q->where('mobile', $withoutPlus)->orWhere('mobile', $withPlus);
                 })->where('firebase_id', $firebase_id)->first();
                 try {
                     $token = JWTAuth::fromUser($credentials);
@@ -404,7 +406,6 @@ class ApiController extends Controller
                             $credentials->fcm_id = ($request->fcm_id) ? $request->fcm_id : '';
                         }*/
                         $credentials->update();
-
                     }
                 } catch (JWTException $e) {
                     $response['error'] = true;
@@ -440,9 +441,16 @@ class ApiController extends Controller
             if (!empty($customer)) {
 
                 $customer->update($request->only([
-                    'name','email','mobile','address','facebook_link','twitter_link','instagram_link','pinterest_link'
-                ])+[
-                    "about"=>$request->about ?? $request->about_me
+                    'name',
+                    'email',
+                    'mobile',
+                    'address',
+                    'facebook_link',
+                    'twitter_link',
+                    'instagram_link',
+                    'pinterest_link'
+                ]) + [
+                    "about" => $request->about ?? $request->about_me
                 ]);
 
                 if (isset($request->fcm_id)) {
@@ -544,8 +552,8 @@ class ApiController extends Controller
         $id = $request->id;
 
         $property = Property::with('customer')->with('user')->with('category:id,category,category_ar,manufacturer,installment,caysh,image')
-        ->with('manufacturer:id,manufacturer,manufacturer_ar,image')->with('model:id,model')
-        ->with('year:id,year')->with('city:id,city,city_ar')->with('favourite')->with('parameters')->with('interested_users');
+            ->with('manufacturer:id,manufacturer,manufacturer_ar,image')->with('model:id,model')
+            ->with('year:id,year')->with('city:id,city,city_ar')->with('favourite')->with('parameters')->with('interested_users');
 
         $property = $property->where('post_type', 1)->where('added_by', $current_user)->when($id, function ($query) use ($id) {
             return $query->where('id', $id);
@@ -563,7 +571,7 @@ class ApiController extends Controller
 
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
-            $response['total_clicks']=(double)$totalClicks;
+            $response['total_clicks'] = (float)$totalClicks;
             $response['total'] = $total;
             $response['data'] = $property_details;
         } else {
@@ -579,16 +587,16 @@ class ApiController extends Controller
     //* START :: get_property   *//
     public function get_property(Request $request)
     {
-        $current_user=isset($request->current_user)?$request->current_user:'';
+        $current_user = isset($request->current_user) ? $request->current_user : '';
         $offset = isset($request->offset) ? $request->offset : 0;
         $limit = isset($request->limit) ? $request->limit : 10;
         //$payload = JWTAuth::getPayload($this->bearerToken($request));
         //$current_user = (string)($payload['customer_id']);
-        $current_user_data = Customer::where('id',$current_user)->first();
+        $current_user_data = Customer::where('id', $current_user)->first();
         DB::enableQueryLog();
         $property = Property::with('customer')->with('user')->with('category:id,category,category_ar,manufacturer,installment,caysh,image')
-        ->with('manufacturer:id,manufacturer,manufacturer_ar,image')->with('model:id,model')
-        ->with('year:id,year')->with('city:id,city,city_ar')->with('favourite')->with('parameters')->with('interested_users');
+            ->with('manufacturer:id,manufacturer,manufacturer_ar,image')->with('model:id,model')
+            ->with('year:id,year')->with('city:id,city,city_ar')->with('favourite')->with('parameters')->with('interested_users');
 
         $property_type = $request->property_type;  //0 : Buy 1:Rent
         $max_price = $request->max_price;
@@ -610,21 +618,21 @@ class ApiController extends Controller
         $city_name = $request->city;
         $furnished = $request->furnished;
         $parameter_id = $request->parameter_id;
-        $totalClicks=0;
+        $totalClicks = 0;
 
         $parameters = $request->parameters;
 
         if (isset($caysh) && $caysh == 1 && !$request->has('promoted')) {
-            if(isset($request->current_user) && $request->current_user != null){
+            if (isset($request->current_user) && $request->current_user != null) {
                 if ($current_user_data->role == 1) {
                     $property = $property->whereHas('category', function ($q) {
                         $q->where('caysh', 1);
                     });
                 } else {
-                $response['error'] = false;
-                $response['message'] = "No data found! Role != 1";
-                $response['data'] = [];
-                return ($response);
+                    $response['error'] = false;
+                    $response['message'] = "No data found! Role != 1";
+                    $response['data'] = [];
+                    return ($response);
                 }
             } else {
                 $response['error'] = false;
@@ -633,11 +641,11 @@ class ApiController extends Controller
                 return ($response);
             }
         } else {
-            $property = $property->whereHas('category', function ($q) use($request) {
-                    if($request->all != true || isset($request->id)){
-                        $q->where('caysh', 0);
-                    }
-                });
+            $property = $property->whereHas('category', function ($q) use ($request) {
+                if ($request->all != true || isset($request->id)) {
+                    $q->where('caysh', 0);
+                }
+            });
         }
 
         if (isset($parameter_id)) {
@@ -646,9 +654,9 @@ class ApiController extends Controller
             });
         }
 
-        if(isset($parameters) && is_array($parameters)){
+        if (isset($parameters) && is_array($parameters)) {
             $property = $property->whereHas('parameters', function ($q) use ($parameters) {
-                foreach($parameters as $parameter){
+                foreach ($parameters as $parameter) {
                     $q->where('parameter_id', $parameter['id'])->where('value_ar', $parameter['value']);
                 }
             });
@@ -704,16 +712,16 @@ class ApiController extends Controller
         }
 
         if (isset($id)) {
-            if(isset($request->get_simiilar)){
-                $property = $property->where('id','!=', $id);
-            }else{
+            if (isset($request->get_simiilar)) {
+                $property = $property->where('id', '!=', $id);
+            } else {
                 $property = $property->where('id', $id);
             }
         }
 
-        if(isset($request->get_simiilar)){
-            $currentProperty =  Property::where('id',$request->get_simiilar)->first();
-            $property = $property->where('id','!=', $request->get_simiilar)->where('manufacturer_id',$currentProperty['manufacturer_id']);
+        if (isset($request->get_simiilar)) {
+            $currentProperty =  Property::where('id', $request->get_simiilar)->first();
+            $property = $property->where('id', '!=', $request->get_simiilar)->where('manufacturer_id', $currentProperty['manufacturer_id']);
         }
 
         if (isset($country)) {
@@ -721,7 +729,7 @@ class ApiController extends Controller
         }
 
         if (isset($request->title)) {
-            $property = $property->where('title','LIKE', "%$request->title%");
+            $property = $property->where('title', 'LIKE', "%$request->title%");
         }
 
         if (isset($state)) {
@@ -816,7 +824,7 @@ class ApiController extends Controller
 
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
-            $response['total_clicks']=(double)$totalClicks;
+            $response['total_clicks'] = (float)$totalClicks;
             $response['total'] = $total;
             $response['data'] = $property_details;
         } else {
@@ -1012,26 +1020,26 @@ class ApiController extends Controller
                     $result = Property::with('customer')->with('category:id,category,category_ar,manufacturer,installment,caysh,image')->with('favourite')->with('parameters')
                         ->with('interested_users')->where('id', $Saveproperty->id)->get();
 
-                    if(isset($result[0])){
+                    if (isset($result[0])) {
                         $property = $result[0];
 
-                        UserInterest::all()->filter(function($q)use($property){
-                            $manufacturers = explode(',',$q->manufacturer_ids);
-                            $models = explode(',',$q->model_ids);
-                            $yearRange = explode(',',$q->year_range);
-                            $priceRange = explode(',',$q->price_range);
-                            $cities = explode(',',$q->city_ids);
-                            $areas = explode(',',$q->area_ids);
+                        UserInterest::all()->filter(function ($q) use ($property) {
+                            $manufacturers = explode(',', $q->manufacturer_ids);
+                            $models = explode(',', $q->model_ids);
+                            $yearRange = explode(',', $q->year_range);
+                            $priceRange = explode(',', $q->price_range);
+                            $cities = explode(',', $q->city_ids);
+                            $areas = explode(',', $q->area_ids);
 
-                            $manufacturerCheck = in_array($property->manufacturer_id,$this->filterArray($manufacturers));
-                            $modelCheck = in_array($property->model_id,$this->filterArray($models));
+                            $manufacturerCheck = in_array($property->manufacturer_id, $this->filterArray($manufacturers));
+                            $modelCheck = in_array($property->model_id, $this->filterArray($models));
                             $yearRangeCheck = in_array($property->year?->year, $this->filterArray($yearRange));
                             $priceRangeCheck = $property->price >= $priceRange[0] && $property->price <= $priceRange[1];
                             $citiesCheck = in_array($property->city_id, $this->filterArray($cities));
                             $areasCheck = in_array($property->area_id, $this->filterArray($areas));
 
-                            if($manufacturerCheck && $modelCheck && $yearRangeCheck && $priceRangeCheck && $citiesCheck && $areasCheck) return true;
-                        })->map(function($interest)use($property){
+                            if ($manufacturerCheck && $modelCheck && $yearRangeCheck && $priceRangeCheck && $citiesCheck && $areasCheck) return true;
+                        })->map(function ($interest) use ($property) {
                             $customer = $interest->user_id;
 
                             Notifications::create([
@@ -1046,12 +1054,10 @@ class ApiController extends Controller
 
                             $_customer = Customer::find($customer);
 
-                            if($_customer){
+                            if ($_customer) {
                                 $_customer->increment('unreaded_notifications_count');
                             }
-
-
-                    });
+                        });
                     }
 
                     // $property_details = get_property_details($result);
@@ -1076,8 +1082,11 @@ class ApiController extends Controller
         return response()->json($response);
     }
 
-    function filterArray($arr){
-        return array_filter($arr,function($q){!empty($q);});
+    function filterArray($arr)
+    {
+        return array_filter($arr, function ($q) {
+            !empty($q);
+        });
     }
     //* END :: post_property   *//
 
@@ -1258,7 +1267,7 @@ class ApiController extends Controller
 
 
                                 $update_data->save();
-                            }else{
+                            } else {
                                 $AssignParameters = new AssignParameters();
 
                                 $AssignParameters->modal()->associate($property);
@@ -1406,10 +1415,10 @@ class ApiController extends Controller
     {
         $slider = Slider::select('id', 'image', 'sequence', 'category_id', 'propertys_id')
             ->with('property')
-            ->orderBy('sequence', 'ASC')->get()->map(function($row){
-                if(filter_var($row->image, FILTER_VALIDATE_URL) === false){
+            ->orderBy('sequence', 'ASC')->get()->map(function ($row) {
+                if (filter_var($row->image, FILTER_VALIDATE_URL) === false) {
                     $image = ($row->image != '') ? url('') . config('global.IMG_PATH') . config('global.SLIDER_IMG_PATH') . $row->image : $row->property?->title_image;
-                }else{
+                } else {
                     $image = $row->property?->title_image;
                 }
                 return [
@@ -1419,13 +1428,13 @@ class ApiController extends Controller
                     'category_id' => $row->category_id,
                     'propertys_id' => $row->propertys_id,
                     'promoted' => true,
-                    'offer'=> $row->property != null ? get_property_details([$row->property])[0] : null,
+                    'offer' => $row->property != null ? get_property_details([$row->property])[0] : null,
                 ];
             });
 
         $advertisements = Advertisement::whereRaw('now() between start_date and end_date')
             ->with('property')
-            ->where('is_enable', 1)->where('status', 0)->get()->map(function($row){
+            ->where('is_enable', 1)->where('status', 0)->get()->map(function ($row) {
                 if (filter_var($row->image, FILTER_VALIDATE_URL) === false) {
                     $row->image = ($row->image != '') ? url('') . config('global.IMG_PATH') . config('global.ADVERTISEMENT_IMAGE_PATH') . $row->image : '';
                 } else {
@@ -1438,21 +1447,21 @@ class ApiController extends Controller
                     'category_id' => $row->property?->category_id,
                     'propertys_id' => $row->property_id,
                     'promoted' => true,
-                    'offer'=> $row->property != null ? get_property_details([$row->property])[0] : null,
+                    'offer' => $row->property != null ? get_property_details([$row->property])[0] : null,
                 ];
             });
 
-            $rows = $slider->merge($advertisements)->sortBy('sequence')->values()->all();
+        $rows = $slider->merge($advertisements)->sortBy('sequence')->values()->all();
 
-            if(count($rows) > 0){
-                $response['error'] = false;
-                $response['message'] = "Data Fetch Successfully";
-                $response['data'] = $rows;
-            }else{
-                $response['error'] = false;
-                $response['message'] = "No data found!";
-                $response['data'] = [];
-            }
+        if (count($rows) > 0) {
+            $response['error'] = false;
+            $response['message'] = "Data Fetch Successfully";
+            $response['data'] = $rows;
+        } else {
+            $response['error'] = false;
+            $response['message'] = "No data found!";
+            $response['data'] = [];
+        }
 
         return response()->json($response);
     }
@@ -1510,10 +1519,10 @@ class ApiController extends Controller
         $offset = isset($request->offset) ? $request->offset : 0;
         $limit = isset($request->limit) ? $request->limit : 10;
 
-        $manufacturers = Manufacturer::select('id', 'manufacturer','manufacturer_ar', 'image')->where('status', '1')->withCount(['properties' => function ($q) {
+        $manufacturers = Manufacturer::select('id', 'manufacturer', 'manufacturer_ar', 'image')->where('status', '1')->withCount(['properties' => function ($q) {
             $q->where('status', 1)->whereHas('category', function ($q) {
-                        $q->where('caysh', 0);
-                    });
+                $q->where('caysh', 0);
+            });
         }]);
 
         if (isset($request->search) && !empty($request->search)) {
@@ -1585,7 +1594,6 @@ class ApiController extends Controller
                 $response['message'] = "No data found!";
                 $response['data'] = [];
             }
-
         } else {
             $response['error'] = true;
             $response['message'] = "Please fill all data and Submit";
@@ -1633,7 +1641,6 @@ class ApiController extends Controller
                 $response['message'] = "No data found!";
                 $response['data'] = [];
             }
-
         } else {
             $response['error'] = true;
             $response['message'] = "Please fill all data and Submit";
@@ -1648,7 +1655,7 @@ class ApiController extends Controller
         $offset = isset($request->offset) ? $request->offset : 0;
         $limit = isset($request->limit) ? $request->limit : 10;
 
-        $city = City::select('id', 'city','city_ar')->where('status', '1');
+        $city = City::select('id', 'city', 'city_ar')->where('status', '1');
 
         if (isset($request->search) && !empty($request->search)) {
             $search = $request->search;
@@ -1716,7 +1723,6 @@ class ApiController extends Controller
                 $response['message'] = "No data found!";
                 $response['data'] = [];
             }
-
         } else {
             $response['error'] = true;
             $response['message'] = "Please fill all data and Submit";
@@ -1835,23 +1841,21 @@ class ApiController extends Controller
 
                                 $_customer = Customer::find($Property->customer[0]->id);
 
-                                if($_customer){
+                                if ($_customer) {
                                     $_customer->increment('unreaded_notifications_count');
                                 }
-
-
                             }
 
-                            try{
+                            try {
                                 $chatData = [
                                     'property_id' => $request->property_id,
                                     'sender_id' => $current_user,
                                     'receiver_id' => $Property->customer[0]->id,
-                                    'message'=> 'لديك عرض جديد علي اعلانك ' . $request->offer . ' دينار'
+                                    'message' => 'لديك عرض جديد علي اعلانك ' . $request->offer . ' دينار'
                                 ];
 
                                 $chat = Chats::create($chatData);
-                            }catch(\Exception $e){
+                            } catch (\Exception $e) {
                                 //dd($e->getMessage());
                             }
                         }
@@ -1900,25 +1904,26 @@ class ApiController extends Controller
 
     //* START :: get_notification_list   *//
 
-    function notifications_count(Request $request) {
-        try{
+    function notifications_count(Request $request)
+    {
+        try {
             $payload = JWTAuth::getPayload($this->bearerToken($request));
             $current_user = (string)($payload['customer_id']);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $current_user = $request->current_user;
         }
 
         $customer = Customer::findOrFail($current_user);
 
-        return response()->json(['count'=>$customer->unreaded_notifications_count]);
-
+        return response()->json(['count' => $customer->unreaded_notifications_count]);
     }
 
-    function mark_as_read(Request $request) {
-        try{
+    function mark_as_read(Request $request)
+    {
+        try {
             $payload = JWTAuth::getPayload($this->bearerToken($request));
             $current_user = (string)($payload['customer_id']);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $current_user = $request->current_user;
         }
 
@@ -1927,8 +1932,7 @@ class ApiController extends Controller
         $customer->unreaded_notifications_count = 0;
         $customer->save();
 
-        return response()->json(['count'=>0]);
-
+        return response()->json(['count' => 0]);
     }
 
     public function get_notification_list(Request $request)
@@ -2014,13 +2018,13 @@ class ApiController extends Controller
                     $customerData['role'] = $customer->role;
 
                     if ($customer->isVerified) {
-                    $customerData['isVerified'] = true;
+                        $customerData['isVerified'] = true;
                     } else {
                         $customerData['isVerified'] = false;
                     }
 
                     if ($customer->isActive) {
-                    $customerData['isActive'] = true;
+                        $customerData['isActive'] = true;
                     } else {
                         $customerData['isActive'] = false;
                     }
@@ -2032,7 +2036,6 @@ class ApiController extends Controller
                     $customerData['customertotalpost'] = $customer->customertotalpost;
 
                     $tempRow['property']['customer'] = $customerData;
-
                 } else if ($row->customers_id == 0) {
 
                     $mobile = Setting::where('type', 'company_tel1')->pluck('data');
@@ -2056,7 +2059,7 @@ class ApiController extends Controller
                     $adminData['facebook_link'] = $address[0];
                     $adminData['customertotalpost'] = Property::where('added_by', $row->added_by)->get()->count();
 
-                    $tempRow['property']['customer']= $adminData;
+                    $tempRow['property']['customer'] = $adminData;
                 }
 
                 $tempRow['property']['category'] = $row['property']->category;
@@ -2243,10 +2246,10 @@ class ApiController extends Controller
         }
 
         if (isset($request->id)) {
-                if (isset($request->get_simiilar)) {
+            if (isset($request->get_simiilar)) {
                 $article = $article->where('id', '!=', $request->id);
-            } else{
-            $article = $article->where('id', $request->id);
+            } else {
+                $article = $article->where('id', $request->id);
             }
         }
 
@@ -2445,24 +2448,24 @@ class ApiController extends Controller
         $customer = Customer::find($request->customer_id);
         $package = Package::find($request->package_id);
 
-        if(!$customer){
+        if (!$customer) {
             return response()->json([
-                'error'=>true,
-                'message'=> 'Custoemr Not Exists'
+                'error' => true,
+                'message' => 'Custoemr Not Exists'
             ]);
         }
 
-        if(!$package){
+        if (!$package) {
             return response()->json([
-                'error'=>true,
-                'message'=> 'Package Not Exists'
+                'error' => true,
+                'message' => 'Package Not Exists'
             ]);
         }
 
         SubscriptionRequest::firstOrCreate([
-            'customer_id'=>$request->customer_id,
-            'package_id'=>$request->package_id,
-            'status'=>'pending'
+            'customer_id' => $request->customer_id,
+            'package_id' => $request->package_id,
+            'status' => 'pending'
         ]);
 
         $response['error'] = false;
@@ -2535,7 +2538,7 @@ class ApiController extends Controller
         }
 
         $property_details = Property::whereIn('id', $arr)->with('category:id,category,category_ar,image')->with('parameters')
-        ->with('manufacturer:id,manufacturer,manufacturer_ar,image')->with('model:id,model')->with('year:id,year');
+            ->with('manufacturer:id,manufacturer,manufacturer_ar,image')->with('model:id,model')->with('year:id,year');
 
 
         $result = $property_details->orderBy('id', 'ASC')->skip($offset)->take($limit)->get();
@@ -2569,7 +2572,7 @@ class ApiController extends Controller
         return response()->json($response);
     }
 
-    function advertisementRequest(Request $request,$id)
+    function advertisementRequest(Request $request, $id)
     {
         $property = Property::findOrFail($id);
 
@@ -2577,7 +2580,7 @@ class ApiController extends Controller
             'property_id' => $property->id,
             'customer_id' => $property->added_by,
             'start_date' => Carbon::now(),
-            'end_date'=> Carbon::now()->addDays(9),
+            'end_date' => Carbon::now()->addDays(9),
             'type' => 'Slider',
             'is_enable' => 1,
             'status' => 1,
@@ -2789,15 +2792,14 @@ class ApiController extends Controller
                     $tempRow['latitude'] = $row->latitude;
                     $tempRow['longitude'] = $row->longitude;
                     if ($row->propery_type == 0) {
-                    $tempRow['property_type']= "sell";
-                } elseif ($row->propery_type == 1) {
-                    $tempRow['property_type']= "rant";
-                } elseif ($row->propery_type == 2) {
-                    $tempRow['property_type'] = "sold";
-                }
-                elseif ($row->propery_type == 3) {
-                     $tempRow['property_type'] = "Rented";
-                }
+                        $tempRow['property_type'] = "sell";
+                    } elseif ($row->propery_type == 1) {
+                        $tempRow['property_type'] = "rant";
+                    } elseif ($row->propery_type == 2) {
+                        $tempRow['property_type'] = "sold";
+                    } elseif ($row->propery_type == 3) {
+                        $tempRow['property_type'] = "Rented";
+                    }
 
 
                     $rows[] = $tempRow;
@@ -2858,7 +2860,6 @@ class ApiController extends Controller
         foreach ($cities as $city) {
 
             array_push($city_arr, ['City' => $city->city, 'Count' => $city->properties_count, 'image' => $city->image]);
-
         }
         $response['city_data'] = $city_arr;
         return response()->json($response);
@@ -2974,18 +2975,18 @@ class ApiController extends Controller
             array_push($data, [
                 'id' => $user_interest->id,
                 'user_id' => $user_interest->user_id,
-                'manufacturer_ids' => !empty($user_interest->manufacturer_ids) ? Manufacturer::select('id', 'manufacturer','manufacturer_ar', 'image')->where('status', '1')
-                                                                                                ->whereIn('id', explode(',', $user_interest->manufacturer_ids))->get() : [],
+                'manufacturer_ids' => !empty($user_interest->manufacturer_ids) ? Manufacturer::select('id', 'manufacturer', 'manufacturer_ar', 'image')->where('status', '1')
+                    ->whereIn('id', explode(',', $user_interest->manufacturer_ids))->get() : [],
                 'model_ids' => !empty($user_interest->model_ids) ? Modell::select('id', 'model')->where('status', '1')
-                                                                                                ->whereIn('id', explode(',', $user_interest->model_ids))->get() : [],
+                    ->whereIn('id', explode(',', $user_interest->model_ids))->get() : [],
                 'city_ids' => !empty($user_interest->city_ids) ? City::select('id', 'city', 'city_ar')->where('status', '1')
-                                                                                                ->whereIn('id', explode(',', $user_interest->city_ids))->get() : [],
+                    ->whereIn('id', explode(',', $user_interest->city_ids))->get() : [],
                 'area_ids' => !empty($user_interest->area_ids) ? Area::select('id', 'area', 'area_ar')->where('status', '1')
-                                                                                                ->whereIn('id', explode(',', $user_interest->area_ids))->get() : [],
+                    ->whereIn('id', explode(',', $user_interest->area_ids))->get() : [],
                 'price_range' => !empty($user_interest->price_range) ? explode(',', $user_interest->price_range) : [],
                 'year_range' => !empty($user_interest->year_range) ? explode(',', $user_interest->year_range) : [],
                 'created_at' => $user_interest->created_at,
-                ]);
+            ]);
         }
         $response['total'] = $total;
         $response['data'] = $data;
@@ -3000,7 +3001,7 @@ class ApiController extends Controller
         $validator = Validator::make($request->all(), [
             'action' => 'required|in:add,edit',
             'id' => 'required_if:action,=,edit',
-            'manufacturer_ids'=> 'required',
+            'manufacturer_ids' => 'required',
             // 'model_ids'=>'required',
             // 'city_ids'=>'required',
             // 'area_ids'=>'required',
@@ -3014,10 +3015,10 @@ class ApiController extends Controller
             return response()->json($response);
         }
 
-        if($request->action == 'edit'){
+        if ($request->action == 'edit') {
             $user_interest = UserInterest::find($request->id);
 
-            if(!$user_interest){
+            if (!$user_interest) {
                 $response['error'] = true;
                 $response['message'] = "Not Found!";
 
@@ -3083,10 +3084,10 @@ class ApiController extends Controller
 
         $offset = isset($request->offset) ? $request->offset : 0;
         $limit = isset($request->limit) ? $request->limit : 10;
-        try{
+        try {
             $payload = JWTAuth::getPayload($this->bearerToken($request));
             $current_user = (string)($payload['customer_id']);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $current_user = $request->current_user;
         }
         DB::enableQueryLog();
@@ -3094,11 +3095,11 @@ class ApiController extends Controller
         $user_interest = UserInterest::where('user_id', $current_user)->first();
 
         $property = Property::with('customer')->with('user')->with('category:id,category,category_ar,manufacturer,installment,caysh,image')
-        ->with('favourite')->with('parameters')->with('interested_users')
-        ->where('status', 1)
-        ->whereHas('category', function ($q) {
-            $q->where('caysh', 0);
-        });
+            ->with('favourite')->with('parameters')->with('interested_users')
+            ->where('status', 1)
+            ->whereHas('category', function ($q) {
+                $q->where('caysh', 0);
+            });
 
         if ($user_interest) {
 
@@ -3171,7 +3172,6 @@ class ApiController extends Controller
                 $response['message'] = "No data found!";
                 $response['data'] = [];
             }
-
         } else {
 
             $response['error'] = false;
@@ -3282,10 +3282,10 @@ class ApiController extends Controller
         $validator = Validator::make($request->all(), [
             'package_id' => 'required',
             'amount' => 'required',
-            'user_id'=>'required|exists:customers,id'
+            'user_id' => 'required|exists:customers,id'
         ]);
 
-        $this->paypal = Setting::where('type','LIKE','%paypal%')->get();
+        $this->paypal = Setting::where('type', 'LIKE', '%paypal%')->get();
 
         $token = $this->generatePaypalToken();
 
@@ -3320,32 +3320,33 @@ class ApiController extends Controller
         }
     }
 
-    function generatePaypalToken(){
+    function generatePaypalToken()
+    {
         $curl = curl_init();
 
-        if($this->paypal->where('type','paypal_mode')->first()->data == 'test'){
+        if ($this->paypal->where('type', 'paypal_mode')->first()->data == 'test') {
             $url = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
-        }else{
+        } else {
             $url = 'https://api-m.paypal.com/v1/oauth2/token';
         }
 
-        $user = $this->paypal->where('type','paypal_client_id')->first()->data;
-        $password = $this->paypal->where('type','paypal_secret_key')->first()->data;
+        $user = $this->paypal->where('type', 'paypal_client_id')->first()->data;
+        $password = $this->paypal->where('type', 'paypal_secret_key')->first()->data;
 
         curl_setopt_array($curl, array(
-        CURLOPT_URL => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: application/x-www-form-urlencoded',
-            'Authorization: Basic '. base64_encode("$user:$password")
-        ),
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/x-www-form-urlencoded',
+                'Authorization: Basic ' . base64_encode("$user:$password")
+            ),
         ));
 
         $response = curl_exec($curl);
@@ -3355,11 +3356,12 @@ class ApiController extends Controller
         return json_decode($response)->access_token;
     }
 
-    function generatePaypalRedirectUrl($data){
+    function generatePaypalRedirectUrl($data)
+    {
 
-        if($this->paypal->where('type','paypal_mode')->first()->data == 'test'){
+        if ($this->paypal->where('type', 'paypal_mode')->first()->data == 'test') {
             $url = 'https://api-m.sandbox.paypal.com';
-        }else{
+        } else {
             $url = 'https://api-m.paypal.com';
         }
 
@@ -3368,19 +3370,19 @@ class ApiController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-        CURLOPT_URL => $url . '/v2/checkout/orders',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>'{
+            CURLOPT_URL => $url . '/v2/checkout/orders',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => '{
         "intent": "CAPTURE",
         "purchase_units": [
             {
-            "reference_id": "'.$refId.'",
+            "reference_id": "' . $refId . '",
             "amount": {
                 "currency_code": "USD",
                 "value": "100.00"
@@ -3402,11 +3404,11 @@ class ApiController extends Controller
             }
         }
         }',
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: application/json',
-            'PayPal-Request-Id: 7b92603e-77ed-4896-8e78-5dea2050476a',
-            'Authorization: Bearer A21AAIM-967h1FrGaWHToaabTTFp4naiNTLja7z-YoxYxRKPk0LVfaPl_Dmhh2i2gyBKXDX9SAEshKLPafyKj9c4iz8i0nw2A'
-        ),
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'PayPal-Request-Id: 7b92603e-77ed-4896-8e78-5dea2050476a',
+                'Authorization: Bearer A21AAIM-967h1FrGaWHToaabTTFp4naiNTLja7z-YoxYxRKPk0LVfaPl_Dmhh2i2gyBKXDX9SAEshKLPafyKj9c4iz8i0nw2A'
+            ),
         ));
 
         $response = curl_exec($curl);
@@ -3501,7 +3503,7 @@ class ApiController extends Controller
                 $chat->audio = '';
             }
             $chat->save();
-            $customer = Customer::select('id', 'fcm_id', 'name','profile')->with(['usertokens' => function ($q) {
+            $customer = Customer::select('id', 'fcm_id', 'name', 'profile')->with(['usertokens' => function ($q) {
                 $q->select('fcm_id', 'id', 'customer_id');
             }])->find($request->receiver_id);
             $property = Property::find($request->property_id);
@@ -3687,7 +3689,8 @@ class ApiController extends Controller
         return response()->json($response);
     }
 
-    function generatePaymentUrl(Request $request) {
+    function generatePaymentUrl(Request $request)
+    {
 
         $validator = Validator::make($request->all(), [
             'package_id' => 'required',
@@ -3703,15 +3706,15 @@ class ApiController extends Controller
         $payload = JWTAuth::getPayload($this->bearerToken($request));
 
         $metaDataSuccess = $this->stripeMetadata([
-            'customer_id'=>$payload['customer_id'],
-            'package_id'=>$request->package_id,
-            'status'=>'success'
+            'customer_id' => $payload['customer_id'],
+            'package_id' => $request->package_id,
+            'status' => 'success'
         ]);
 
         $metaDataCancel = $this->stripeMetadata([
-            'customer_id'=>$payload['customer_id'],
-            'package_id'=>$request->package_id,
-            'status'=>'cancel'
+            'customer_id' => $payload['customer_id'],
+            'package_id' => $request->package_id,
+            'status' => 'cancel'
         ]);
 
         $stripe_currency = system_setting('stripe_currency');
@@ -3720,13 +3723,13 @@ class ApiController extends Controller
         $stripe = new \Stripe\StripeClient(system_setting('stripe_secret_key'));
 
         $checkout = $stripe->checkout->sessions->create([
-            'success_url' => url('api/stripe/status?d='.$metaDataSuccess),
-            'cancel_url'  => url('api/stripe/status?d='.$metaDataCancel),
+            'success_url' => url('api/stripe/status?d=' . $metaDataSuccess),
+            'cancel_url'  => url('api/stripe/status?d=' . $metaDataCancel),
             'line_items' => [
                 [
                     'price_data' => [
                         'currency' => $stripe_currency,
-                        'unit_amount' => $package['price']*100,
+                        'unit_amount' => $package['price'] * 100,
                         'product_data' => ['name' => $package->name],
                     ],
                     'quantity' => 1,
@@ -3736,36 +3739,37 @@ class ApiController extends Controller
         ]);
 
         Metadata::create([
-            'key'=>$this->stripeMetadata([
-                'customer_id'=>$payload['customer_id'],
-                'package_id'=>$request->package_id
+            'key' => $this->stripeMetadata([
+                'customer_id' => $payload['customer_id'],
+                'package_id' => $request->package_id
             ]),
-            'value'=>$checkout
+            'value' => $checkout
         ]);
 
         return $checkout->url;
     }
 
-    function stripeStatus(Request $request){
+    function stripeStatus(Request $request)
+    {
         $data = json_decode(base64_decode($request->d), true);
 
         $key = $this->stripeMetadata([
-            'customer_id'=>$data['customer_id'],
-            'package_id'=>$data['package_id']
+            'customer_id' => $data['customer_id'],
+            'package_id' => $data['package_id']
         ]);
 
-        $metaData = Metadata::where('key',$key)->first();
+        $metaData = Metadata::where('key', $key)->first();
 
-        if($data['status'] == 'success'){
+        if ($data['status'] == 'success') {
             $user_id = $data['customer_id'];
             $package_id = $data['package_id'];
 
             $payment = Payments::whereTransactionId($metaData->value['id'])->first();
-            if(!$payment){
+            if (!$payment) {
                 $payment = new Payments();
             }
             $payment->transaction_id = $metaData->value['id'];
-            $payment->amount = $metaData->value['amount_total']/100;
+            $payment->amount = $metaData->value['amount_total'] / 100;
             $payment->package_id = $package_id;
             $payment->customer_id = $user_id;
             $payment->status = 1;
@@ -3798,12 +3802,13 @@ class ApiController extends Controller
 
 
             return redirect()->to('https://3jlcom.com/payment-success');
-        }else{
+        } else {
             return redirect()->to('https://3jlcom.com/payment-error');
         }
     }
 
-    function stripeMetadata($data) {
+    function stripeMetadata($data)
+    {
         return base64_encode(json_encode($data));
     }
 

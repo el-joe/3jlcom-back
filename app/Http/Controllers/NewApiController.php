@@ -102,59 +102,60 @@ class NewApiController extends Controller
             })
             ->orderBy('id', 'DESC');
 
-        if ($user_interest->manufacturer_ids != '') {
-            $manufacturer_ids = explode(',', $user_interest->manufacturer_ids);
-            $result = $result->whereIn('manufacturer_id', $manufacturer_ids);
-        }
+        if($user_interest){
+            if ($user_interest->manufacturer_ids != '') {
+                $manufacturer_ids = explode(',', $user_interest->manufacturer_ids);
+                $result = $result->whereIn('manufacturer_id', $manufacturer_ids);
+            }
 
-        if ($user_interest->model_ids != '') {
+            if ($user_interest->model_ids != '') {
 
-            $model_ids = explode(',', $user_interest->model_ids);
-            $result = $result->whereIn('model_id', $model_ids);
-        }
+                $model_ids = explode(',', $user_interest->model_ids);
+                $result = $result->whereIn('model_id', $model_ids);
+            }
 
-        if ($user_interest->city_ids != '') {
+            if ($user_interest->city_ids != '') {
 
-            $city_ids = explode(',', $user_interest->city_ids);
-            $result = $result->whereIn('city_id', $city_ids);
-        }
+                $city_ids = explode(',', $user_interest->city_ids);
+                $result = $result->whereIn('city_id', $city_ids);
+            }
 
-        if ($user_interest->area_ids != '') {
+            if ($user_interest->area_ids != '') {
 
-            $area_ids = explode(',', $user_interest->area_ids);
-            $result = $result->whereIn('area_id', $area_ids);
-        }
+                $area_ids = explode(',', $user_interest->area_ids);
+                $result = $result->whereIn('area_id', $area_ids);
+            }
 
-        if ($user_interest->year_range != '') {
+            if ($user_interest->year_range != '') {
 
-            $max_year = explode(',', $user_interest->year_range)[1] ?? 3000;
-            $min_year = explode(',', $user_interest->year_range)[0] ?? 1900;
+                $max_year = explode(',', $user_interest->year_range)[1] ?? 3000;
+                $min_year = explode(',', $user_interest->year_range)[0] ?? 1900;
 
-            if (isset($max_year) && isset($min_year)) {
+                if (isset($max_year) && isset($min_year)) {
 
-                $result = $result->where(function ($query) use ($min_year, $max_year) {
-                    $query->whereRaw("CAST(price AS DECIMAL(10, 2)) >= ?", [$min_year])
-                        ->whereRaw("CAST(price AS DECIMAL(10, 2)) <= ?", [$max_year]);
-                });
+                    $result = $result->where(function ($query) use ($min_year, $max_year) {
+                        $query->whereRaw("CAST(price AS DECIMAL(10, 2)) >= ?", [$min_year])
+                            ->whereRaw("CAST(price AS DECIMAL(10, 2)) <= ?", [$max_year]);
+                    });
+                }
+            }
+
+            if ($user_interest->price_range != '') {
+
+                $max_price = explode(',', $user_interest->price_range)[1] ?? 99999999999999;
+                $min_price = explode(',', $user_interest->price_range)[0] ?? 0;
+
+                if (isset($max_price) && isset($min_price)) {
+                    $min_price = floatval($min_price);
+                    $max_price = floatval($max_price);
+
+                    $result = $result->where(function ($query) use ($min_price, $max_price) {
+                        $query->whereRaw("CAST(price AS DECIMAL(10, 2)) >= ?", [$min_price])
+                            ->whereRaw("CAST(price AS DECIMAL(10, 2)) <= ?", [$max_price]);
+                    });
+                }
             }
         }
-
-        if ($user_interest->price_range != '') {
-
-            $max_price = explode(',', $user_interest->price_range)[1] ?? 99999999999999;
-            $min_price = explode(',', $user_interest->price_range)[0] ?? 0;
-
-            if (isset($max_price) && isset($min_price)) {
-                $min_price = floatval($min_price);
-                $max_price = floatval($max_price);
-
-                $result = $result->where(function ($query) use ($min_price, $max_price) {
-                    $query->whereRaw("CAST(price AS DECIMAL(10, 2)) >= ?", [$min_price])
-                        ->whereRaw("CAST(price AS DECIMAL(10, 2)) <= ?", [$max_price]);
-                });
-            }
-        }
-
         $result = $result
             ->take(6)
             ->get();
