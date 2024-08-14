@@ -1031,12 +1031,12 @@ class ApiController extends Controller
                             $cities = explode(',', $q->city_ids);
                             $areas = explode(',', $q->area_ids);
 
-                            $manufacturerCheck = in_array($property->manufacturer_id, $this->filterArray($manufacturers));
-                            $modelCheck = in_array($property->model_id, $this->filterArray($models));
-                            $yearRangeCheck = in_array($property->year?->year, $this->filterArray($yearRange));
+                            $manufacturerCheck = count($manufacturers) > 0 ? in_array($property->manufacturer_id, $this->filterArray($manufacturers)) : true;
+                            $modelCheck = count($models) > 0 ? in_array($property->model_id, $this->filterArray($models)) : true;
+                            $yearRangeCheck = count($yearRange) > 0 ? in_array($property->year?->year, $this->filterArray($yearRange)) : true;
                             $priceRangeCheck = $property->price >= $priceRange[0] && $property->price <= $priceRange[1];
-                            $citiesCheck = in_array($property->city_id, $this->filterArray($cities));
-                            $areasCheck = in_array($property->area_id, $this->filterArray($areas));
+                            $citiesCheck = count($cities) > 0 ? in_array($property->city_id, $this->filterArray($cities)) : true;
+                            $areasCheck = count($areas) > 0 ? in_array($property->area_id, $this->filterArray($areas)) : true;
 
                             if ($manufacturerCheck && $modelCheck && $yearRangeCheck && $priceRangeCheck && $citiesCheck && $areasCheck) return true;
                         })->map(function ($interest) use ($property) {
@@ -1084,6 +1084,7 @@ class ApiController extends Controller
 
     function filterArray($arr)
     {
+        if(count($arr) == 0) return true;
         return array_filter($arr, function ($q) {
             !empty($q);
         });
