@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PropertyResource;
 use App\Models\Advertisement;
 use App\Models\Article;
 use App\Models\AssignParameters;
@@ -161,7 +162,9 @@ class ApiController extends Controller
             'mobile'=>'required'
         ]);
 
-        $withoutPlus = str_replace('+','',$request->mobile);
+        $mobile = str_replace('9620','962',$request->mobile);
+
+        $withoutPlus = str_replace('+','',$mobile);
         $withPlus = '+'.$withoutPlus;
         $withoutCountryCodeAndPlus = substr($withoutPlus,3);
 
@@ -169,7 +172,7 @@ class ApiController extends Controller
             $q->where('mobile',$withoutPlus)->orWhere('mobile',$withPlus)->orWhere('mobile',$withoutCountryCodeAndPlus);
         })->first();
 
-        $check1 = ($request->mobile == '123456789' || $request->mobile == '1234567899');
+        $check1 = ($mobile == '123456789' || $mobile == '1234567899');
         $check2 = ($withoutPlus == '123456789' || $withoutPlus == '1234567899');
         $check3 = ($withoutCountryCodeAndPlus == '123456789' || $withoutCountryCodeAndPlus == '1234567899');
 
@@ -180,7 +183,7 @@ class ApiController extends Controller
             $customer->name = "";
             $customer->firebase_id = "";
             $customer->email = "";
-            $customer->mobile = $request->mobile;
+            $customer->mobile = $mobile;
             $customer->address = "";
             $customer->logintype = 1;
             $customer->isActive = 1;
@@ -227,7 +230,9 @@ class ApiController extends Controller
             'verification_code'=>'required'
         ]);
 
-        $withoutPlus = str_replace('+','',$request->mobile);
+        $mobile = str_replace('9620','962',$request->mobile);
+
+        $withoutPlus = str_replace('+','',$mobile);
         $withPlus = '+'.$withoutPlus;
         $withoutCountryCodeAndPlus = substr($withoutPlus,3);
 
@@ -553,7 +558,8 @@ class ApiController extends Controller
 
 
         if (!$result->isEmpty()) {
-            $property_details = get_property_details($result, $current_user);
+            $property_details = PropertyResource::collection($result);
+            // $property_details = get_property_details($result, $current_user);
 
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
@@ -628,7 +634,7 @@ class ApiController extends Controller
             }
         } else {
             $property = $property->whereHas('category', function ($q) use($request) {
-                    if($request->all != true){
+                    if($request->all != true || isset($request->id)){
                         $q->where('caysh', 0);
                     }
                 });
@@ -715,7 +721,7 @@ class ApiController extends Controller
         }
 
         if (isset($request->title)) {
-            $property = $property->where('title','LIKE', "%$reqest->title%");
+            $property = $property->where('title','LIKE', "%$request->title%");
         }
 
         if (isset($state)) {
@@ -806,7 +812,7 @@ class ApiController extends Controller
 
         if (!$result->isEmpty()) {
             $property_details
-                = get_property_details($result, $current_user);
+                = PropertyResource::collection($result);
 
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
@@ -1048,7 +1054,8 @@ class ApiController extends Controller
                     });
                     }
 
-                    $property_details = get_property_details($result);
+                    // $property_details = get_property_details($result);
+                    $property_details = PropertyResource::collection($result);
 
                     /*if(result['category']['id'] == '13'){
 
@@ -1314,7 +1321,8 @@ class ApiController extends Controller
                     /// END :: UPLOAD GALLERY IMAGE
                     $payload = JWTAuth::getPayload($this->bearerToken($request));
                     $current_user = (string)($payload['customer_id']);
-                    $property_details = get_property_details($update_property, $current_user);
+                    // $property_details = get_property_details($update_property, $current_user);
+                    $property_details = PropertyResource::collection($update_property);
                     $response['error'] = false;
                     $response['message'] = 'Property Update Succssfully';
                     $response['data'] = $property_details;
@@ -2350,7 +2358,8 @@ class ApiController extends Controller
                             $slider->save();
                         }
                         $result = Property::with('customer')->with('category:id,category,image')->with('favourite')->with('parameters')->with('interested_users')->where('id', $request->property_id)->get();
-                        $property_details = get_property_details($result);
+                        // $property_details = get_property_details($result);
+                        $property_details = PropertyResource::collection($result);
                         $adv->image = "";
                         $adv->save();
                         $userpackage->used_limit_for_advertisement =  $userpackage->used_limit_for_advertisement + 1;
@@ -2548,7 +2557,9 @@ class ApiController extends Controller
             });
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
-            $response['data'] = get_property_details($result,$current_user);
+            $property_details = PropertyResource::collection($result);
+            $response['data'] = $property_details;
+            // $response['data'] = get_property_details($result,$current_user);
             $response['total'] = $total;
         } else {
             $response['error'] = false;
@@ -3148,7 +3159,8 @@ class ApiController extends Controller
             $result = $property->skip($offset)->take($limit)->orderBy("created_at", "DESC")->get();
 
             if (!empty($result)) {
-                $property_details = get_property_details($result, $current_user);
+                // $property_details = get_property_details($result, $current_user);
+                $property_details = PropertyResource::collection($result);
                 $response['error'] = false;
                 $response['message'] = "Data Fetch Successfully";
                 $response['total'] = $total;
