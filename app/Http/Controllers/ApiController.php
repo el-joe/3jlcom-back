@@ -1024,12 +1024,12 @@ class ApiController extends Controller
                         $property = $result[0];
 
                         UserInterest::all()->filter(function ($q) use ($property) {
-                            $manufacturers = explode(',', $q->manufacturer_ids);
-                            $models = explode(',', $q->model_ids);
-                            $yearRange = explode(',', $q->year_range);
-                            $priceRange = explode(',', $q->price_range);
-                            $cities = explode(',', $q->city_ids);
-                            $areas = explode(',', $q->area_ids);
+                            $manufacturers = array_filter(explode(',', $q->manufacturer_ids));
+                            $models = array_filter(explode(',', $q->model_ids));
+                            $yearRange = array_filter(explode(',', $q->year_range));
+                            $priceRange = array_filter(explode(',', $q->price_range));
+                            $cities = array_filter(explode(',', $q->city_ids));
+                            $areas = array_filter(explode(',', $q->area_ids));
 
                             $manufacturerCheck = count($manufacturers) > 0 ? in_array($property->manufacturer_id, $this->filterArray($manufacturers)) : true;
                             $modelCheck = count($models) > 0 ? in_array($property->model_id, $this->filterArray($models)) : true;
@@ -1086,7 +1086,7 @@ class ApiController extends Controller
     {
         if(count($arr) == 0) return true;
         return array_filter($arr, function ($q) {
-            !empty($q);
+            return !empty($q);
         });
     }
     //* END :: post_property   *//
