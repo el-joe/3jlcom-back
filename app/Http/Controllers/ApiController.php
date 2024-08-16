@@ -58,93 +58,6 @@ use Tymon\JWTAuth\Claims\Issuer;
 
 class ApiController extends Controller
 {
-    function update_subscription()
-    {
-        $data = UserPurchasedPackage::where('user_id', Auth::id())->where('end_date', Carbon::now());
-        if ($data) {
-            $Customer = Customer::find(Auth::id());
-            $Customer->subscription = 0;
-            $Customer->update();
-        }
-    }
-
-    //* START :: get_system_settings   *//
-    public function get_system_settings(Request $request)
-    {
-
-        $result = '';
-
-        $result =  Setting::select('type', 'data')->get();
-        $data_arr = [];
-        foreach ($result as $row) {
-            /*if ($row->type == "place_api_key") {
-                $publicKey = file_get_contents(base_path('public_key.pem')); // Load the public key
-
-                $encryptedData = '';
-
-
-                if (openssl_public_encrypt($row->data, $encryptedData, $publicKey)) {
-                    // If encryption was successful, you can store or transmit $encryptedData as needed
-                    $tempRow[$row->type] = base64_encode($encryptedData);
-                } else {
-                    // Handle encryption failure
-                    // You can log an error or return an error response
-                }
-
-            } else {*/
-            $tempRow[$row->type] = $row->data;
-            //}
-        }
-
-        if (isset($request->user_id)) {
-
-            $data = UserPurchasedPackage::where('modal_id', (string)$request->user_id)
-                ->where('end_date', date('d'))->where('end_date', '!=', NULL)->get();
-
-            $customer = Customer::select('id')->where('subscription', '1')
-                ->with('user_purchased_package.package')->find((string)$request->user_id);
-
-            if ($customer) {
-                if (count($data)) {
-                    $customer->subscription = 0;
-                    $customer->update();
-                }
-
-                $tempRow['subscription'] = true;
-                $tempRow['package'] = $customer;
-                $tempRow['current_package'] = $customer->currentPackage()->load('package');
-                $tempRow['current_package']['used_ads'] = $customer->usedPackageAdsLimit();
-                $tempRow['current_package']['used_property'] = $customer->usedPackagePropertyLimit();
-            } else {
-                $tempRow['subscription'] = false;
-            }
-        }
-        $language = Language::select('code', 'name')->get();
-        $tempRow['demo_mode'] = env('DEMO_MODE');
-        $tempRow['languages'] = $language;
-        DB::enableQueryLog();
-
-        $tempRow['min_price'] = DB::table('propertys')
-            ->selectRaw('MIN(CAST(price AS DECIMAL(10, 2))) as min_price')
-            ->value('min_price');
-
-
-        $tempRow['max_price'] = DB::table('propertys')
-            ->selectRaw('MAX(CAST(price AS DECIMAL(10, 2))) as min_price')
-            ->value('min_price');
-
-        if (!empty($result)) {
-            $response['error'] = false;
-            $response['message'] = "Data Fetch Successfully";
-            $response['data'] = $tempRow;
-        } else {
-            $response['error'] = false;
-            $response['message'] = "No data found!";
-            $response['data'] = [];
-        }
-        return response()->json($response);
-    }
-    //* END :: Get System Setting   *//
 
     function sendSMS($phone, $code)
     {
@@ -861,9 +774,6 @@ class ApiController extends Controller
             $customer = Customer::find($current_user);
             $package = $customer->currentPackage()->load('package');
 
-
-            $arr = 0;
-
             $prop_count = 0;
             if (!($package)) {
                 $response['error'] = false;
@@ -1084,7 +994,7 @@ class ApiController extends Controller
 
     function filterArray($arr)
     {
-        if(count($arr) == 0) return true;
+        if (count($arr) == 0) return true;
         return array_filter($arr, function ($q) {
             return !empty($q);
         });
@@ -3935,4 +3845,93 @@ class ApiController extends Controller
         }
         return response()->json($response);
     }
+
+    function update_subscription()
+    {
+        $data = UserPurchasedPackage::where('user_id', Auth::id())->where('end_date', Carbon::now());
+        if ($data) {
+            $Customer = Customer::find(Auth::id());
+            $Customer->subscription = 0;
+            $Customer->update();
+        }
+    }
+
+    //* START :: get_system_settings   *//
+    public function get_system_settings(Request $request)
+    {
+
+        $result = '';
+
+        $result =  Setting::select('type', 'data')->get();
+        $data_arr = [];
+        foreach ($result as $row) {
+            /*if ($row->type == "place_api_key") {
+                $publicKey = file_get_contents(base_path('public_key.pem')); // Load the public key
+
+                $encryptedData = '';
+
+
+                if (openssl_public_encrypt($row->data, $encryptedData, $publicKey)) {
+                    // If encryption was successful, you can store or transmit $encryptedData as needed
+                    $tempRow[$row->type] = base64_encode($encryptedData);
+                } else {
+                    // Handle encryption failure
+                    // You can log an error or return an error response
+                }
+
+            } else {*/
+            $tempRow[$row->type] = $row->data;
+            //}
+        }
+
+        if (isset($request->user_id)) {
+
+            $data = UserPurchasedPackage::where('modal_id', (string)$request->user_id)
+                ->where('end_date', date('d'))->where('end_date', '!=', NULL)->get();
+
+            $customer = Customer::select('id')->where('subscription', '1')
+                ->with('user_purchased_package.package')->find((string)$request->user_id);
+
+            if ($customer) {
+                if (count($data)) {
+                    $customer->subscription = 0;
+                    $customer->update();
+                }
+
+                $tempRow['subscription'] = true;
+                $tempRow['package'] = $customer;
+                $tempRow['current_package'] = $customer->currentPackage()->load('package');
+                $tempRow['current_package']['used_ads'] = $customer->usedPackageAdsLimit();
+                $tempRow['current_package']['used_property'] = $customer->usedPackagePropertyLimit();
+            } else {
+                $tempRow['subscription'] = false;
+            }
+        }
+        $language = Language::select('code', 'name')->get();
+        $tempRow['demo_mode'] = env('DEMO_MODE');
+        $tempRow['languages'] = $language;
+        DB::enableQueryLog();
+
+        $tempRow['min_price'] = DB::table('propertys')
+            ->selectRaw('MIN(CAST(price AS DECIMAL(10, 2))) as min_price')
+            ->value('min_price');
+
+
+        $tempRow['max_price'] = DB::table('propertys')
+            ->selectRaw('MAX(CAST(price AS DECIMAL(10, 2))) as min_price')
+            ->value('min_price');
+
+        if (!empty($result)) {
+            $response['error'] = false;
+            $response['message'] = "Data Fetch Successfully";
+            $response['data'] = $tempRow;
+        } else {
+            $response['error'] = false;
+            $response['message'] = "No data found!";
+            $response['data'] = [];
+        }
+        return response()->json($response);
+    }
+    //* END :: Get System Setting   *//
+
 }
