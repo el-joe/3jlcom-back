@@ -431,7 +431,7 @@ class NewApiController extends Controller
     {
         $city = $request->city_id;
 
-        $categories = Category::where('status', '1')->get();
+        $categories = Category::where('status', '1')->whereNotIn('id',[2])->get();
 
         $current_user = $request->current_user ?? 0;
         $current_user_data = Customer::where('id', $current_user)->first();
