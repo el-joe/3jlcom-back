@@ -944,7 +944,7 @@ class ApiController extends Controller
                             $manufacturerCheck = count($manufacturers) > 0 ? in_array($property->manufacturer_id, $this->filterArray($manufacturers)) : true;
                             $modelCheck = count($models) > 0 ? in_array($property->model_id, $this->filterArray($models)) : true;
                             $yearRangeCheck = count($yearRange) > 0 ? in_array($property->year?->year, $this->filterArray($yearRange)) : true;
-                            $priceRangeCheck = $property->price >= $priceRange[0] && $property->price <= $priceRange[1];
+                            $priceRangeCheck = $property->price >= ($priceRange[0]??0) && $property->price <= ($priceRange[1]??99999);
                             $citiesCheck = count($cities) > 0 ? in_array($property->city_id, $this->filterArray($cities)) : true;
                             $areasCheck = count($areas) > 0 ? in_array($property->area_id, $this->filterArray($areas)) : true;
 
