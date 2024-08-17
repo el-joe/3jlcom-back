@@ -1710,8 +1710,26 @@ class ApiController extends Controller
                             'status'  => '0'
                         ]);
 
-                        $Property = Property::with('customer')->find($request->property_id);
+                        $Property = Property::with('customer')
+                            ->find($request->property_id);
                         if (count($Property->customer) > 0) {
+
+                            Notifications::create([
+                                'title' => __('New Offer'),
+                                'message' => __('New Offer Added on You Car Ad'),
+                                'image' => '',
+                                'type' => '1',
+                                'send_type' => '1',
+                                'customers_id' => $Property->customer[0]->id,
+                                'propertys_id' => $Property->id
+                            ]);
+
+                            $_customer = Customer::find($Property->customer[0]->id);
+
+                            if ($_customer) {
+                                $_customer->increment('unreaded_notifications_count');
+                            }
+
 
                             if ($Property->customer[0]->fcm_id != '' && $Property->customer[0]->notification == 1) {
 
@@ -1740,21 +1758,6 @@ class ApiController extends Controller
                                 }
                                 //END ::  Send Notification To Customer
 
-                                Notifications::create([
-                                    'title' => __('New Offer'),
-                                    'message' => $msg,
-                                    'image' => '',
-                                    'type' => '1',
-                                    'send_type' => '1',
-                                    'customers_id' => $Property->customer[0]->id,
-                                    'propertys_id' => $Property->id
-                                ]);
-
-                                $_customer = Customer::find($Property->customer[0]->id);
-
-                                if ($_customer) {
-                                    $_customer->increment('unreaded_notifications_count');
-                                }
                             }
 
                             try {
