@@ -1716,7 +1716,8 @@ class ApiController extends Controller
 
                             Notifications::create([
                                 'title' => __('New Offer'),
-                                'message' => __('New Offer Added on You Car Ad'),
+                                'message' => 'عرض جديد لإعلان كيشها',
+                                // 'message' => __('New Offer Added on You Car Ad'),
                                 'image' => '',
                                 'type' => '1',
                                 'send_type' => '1',
