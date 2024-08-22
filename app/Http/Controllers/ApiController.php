@@ -123,7 +123,9 @@ class ApiController extends Controller
                 $customer->subscription = 1;
             }
         }
-
+        if(!empty($request->fcm_id)){
+            $customer->fcm_id = $request->fcm_id;
+        }
         $customer->verification_code = $code;
         $customer->save();
 

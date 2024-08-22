@@ -103,57 +103,63 @@ class NotificationController extends Controller
 
                 $fcm_ids = array();
                 $fcm_ids[] = $_customer->fcm_id;
-                if (!empty($fcm_ids)) {
-                    $registrationIDs = array_filter($fcm_ids);
-                    $fcmMsg = array(
+
+                if(!$request->hasFile('file')){
+
+                    if (!empty($fcm_ids)) {
+                        $registrationIDs = array_filter($fcm_ids);
+                        $fcmMsg = array(
+                            'title' => $request->title,
+                            'message' => $request->message,
+                            'type' => 'admin_notification',
+                            'body' => 'New Notification',
+                            'click_action' => 'RN_NOTIFICATION_CLICK',
+                            'sound' => 'default',
+                            'image'=>'https://admin.3jlcom.com/assets/images/logo/logo.png'
+                        );
+                        send_push_notification($registrationIDs, $fcmMsg);
+                    }
+
+                    Notifications::create([
                         'title' => $request->title,
                         'message' => $request->message,
-                        'type' => 'admin_notification',
-                        'body' => 'New Notification',
-                        'click_action' => 'RN_NOTIFICATION_CLICK',
-                        'sound' => 'default',
-                        'image'=>'https://admin.3jlcom.com/assets/images/logo/logo.png'
-                    );
-                    send_push_notification($registrationIDs, $fcmMsg);
+                        'image' => $imageName,
+                        'type' => $type,
+                        'send_type' => $request->send_type,
+                        'customers_id' => $user_id,
+                        'propertys_id' => isset($propertys_id) ? $propertys_id : 0
+                    ]);
+
+
+                    if($_customer){
+                        $_customer->increment('unreaded_notifications_count');
+                    }
+
+                }else{
+                    $img = ($imageName != '') ? url('') . config('global.IMG_PATH') . config('global.NOTIFICATION_IMG_PATH') . $imageName : "";
+                    // dd($fcm_ids);
+
+                    //START :: Send Notification To Customer
+                    if (!empty($fcm_ids)) {
+
+                        $registrationIDs = array_filter($fcm_ids);
+                        // dd($registrationIDs);
+                        $fcmMsg = array(
+                            'title' => $request->title,
+                            'message' => $request->message,
+                            "image" => $img,
+                            'type' => 'default',
+                            'body' => $request->message,
+                            'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                            'sound' => 'default',
+
+                        );
+                        send_push_notification($registrationIDs, $fcmMsg);
+                        //   dd($send);
+                    }
+
                 }
 
-                Notifications::create([
-                    'title' => $request->title,
-                    'message' => $request->message,
-                    'image' => $imageName,
-                    'type' => $type,
-                    'send_type' => $request->send_type,
-                    'customers_id' => $user_id,
-                    'propertys_id' => isset($propertys_id) ? $propertys_id : 0
-                ]);
-
-
-                if($_customer){
-                    $_customer->increment('unreaded_notifications_count');
-                }
-
-
-                $img = ($imageName != '') ? url('') . config('global.IMG_PATH') . config('global.NOTIFICATION_IMG_PATH') . $imageName : "";
-                // dd($fcm_ids);
-
-                //START :: Send Notification To Customer
-                if (!empty($fcm_ids)) {
-
-                    $registrationIDs = array_filter($fcm_ids);
-                    // dd($registrationIDs);
-                    $fcmMsg = array(
-                        'title' => $request->title,
-                        'message' => $request->message,
-                        "image" => $img,
-                        'type' => 'default',
-                        'body' => $request->message,
-                        'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
-                        'sound' => 'default',
-
-                    );
-                    send_push_notification($registrationIDs, $fcmMsg);
-                    //   dd($send);
-                }
                 //END ::  Send Notification To Customer
                 return back()->with('success', 'Message Send Successfully');
             } else {
