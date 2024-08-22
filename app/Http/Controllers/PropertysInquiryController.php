@@ -215,6 +215,7 @@ class PropertysInquiryController extends Controller
                             'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
                             'sound' => 'default',
                             'id' => $PropertysInquiry->id,
+                            'image'=>'https://admin.3jlcom.com/assets/images/logo/logo.png'
                         );
                         $result = send_push_notification($registrationIDs, $fcmMsg);
                     }

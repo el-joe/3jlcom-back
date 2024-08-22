@@ -217,6 +217,7 @@ class AdvertisementController extends Controller
                         'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
                         'sound' => 'default',
                         'id' => $adv->id,
+                        'image'=>'https://admin.3jlcom.com/assets/images/logo/logo.png'
                     );
                     send_push_notification($registrationIDs, $fcmMsg);
                 }

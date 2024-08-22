@@ -981,6 +981,7 @@ class ApiController extends Controller
                                     'body' => 'you have new offer',
                                     'click_action' => 'RN_NOTIFICATION_CLICK',
                                     'sound' => 'default',
+                                    'image'=>'https://admin.3jlcom.com/assets/images/logo/logo.png'
                                 );
                                 send_push_notification($registrationIDs, $fcmMsg);
                             }
@@ -1760,6 +1761,7 @@ class ApiController extends Controller
                                     'body' => 'you have new offer',
                                     'click_action' => 'RN_NOTIFICATION_CLICK',
                                     'sound' => 'default',
+                                    'image'=>'https://admin.3jlcom.com/assets/images/logo/logo.png'
                                 );
                                 send_push_notification($registrationIDs, $fcmMsg);
                             }
