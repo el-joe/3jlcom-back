@@ -99,6 +99,23 @@ class NotificationController extends Controller
                 } else {
                     $type = $request->type;
                 }
+                $_customer = Customer::find($user_id);
+
+                $fcm_ids = array();
+                $fcm_ids[] = $_customer->fcm_id;
+                if (!empty($fcm_ids)) {
+                    $registrationIDs = array_filter($fcm_ids);
+                    $fcmMsg = array(
+                        'title' => $request->title,
+                        'message' => $request->message,
+                        'type' => 'admin_notification',
+                        'body' => 'New Notification',
+                        'click_action' => 'RN_NOTIFICATION_CLICK',
+                        'sound' => 'default',
+                    );
+                    send_push_notification($registrationIDs, $fcmMsg);
+                }
+
                 Notifications::create([
                     'title' => $request->title,
                     'message' => $request->message,
@@ -109,7 +126,6 @@ class NotificationController extends Controller
                     'propertys_id' => isset($propertys_id) ? $propertys_id : 0
                 ]);
 
-                $_customer = Customer::find($user_id);
 
                 if($_customer){
                     $_customer->increment('unreaded_notifications_count');

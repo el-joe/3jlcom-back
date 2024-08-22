@@ -54,6 +54,7 @@ use App\Libraries\Paypal_pro;
 use App\Models\SubscriptionRequest;
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 use Tymon\JWTAuth\Claims\Issuer;
 
 class ApiController extends Controller
@@ -753,6 +754,11 @@ class ApiController extends Controller
     //* START :: post_property   *//
     public function post_property(Request $request)
     {
+        $payload = JWTAuth::getPayload($this->bearerToken($request));
+        $current_user = (string)($payload['customer_id']);
+
+        $customer = Customer::find($current_user);
+
         $validator = Validator::make($request->all(), [
             'package_id'    => 'required',
             'category_id'   => 'required',
@@ -768,24 +774,36 @@ class ApiController extends Controller
         ]);
 
         if (!$validator->fails()) {
-            $payload = JWTAuth::getPayload($this->bearerToken($request));
-            $current_user = (string)($payload['customer_id']);
-
-            $customer = Customer::find($current_user);
             $package = $customer->currentPackage()->load('package');
 
             $prop_count = 0;
             if (!($package)) {
-                $response['error'] = false;
+                $response['error'] = true;
                 $response['message'] = 'Package not found';
                 return response()->json($response);
             } else {
 
                 if (!$package->package) {
-                    $response['error'] = false;
+                    $response['error'] = true;
                     $response['message'] = 'Package not found for add property';
                     return response()->json($response);
                 }
+
+                $executed = RateLimiter::attempt(
+                    'create-ads:'.$customer->id,
+                    1,
+                    function() {
+                        // Send message...
+                    },
+                    $decayRate = 60*60,
+                );
+
+                if (!$executed && $package->package->id == 1) {
+                    $response['error'] = true;
+                    $response['message'] = 'مسموح بأعلان واحد فقط بالساعه في حاله الباقه المجانيه!';
+                    return response()->json($response);
+                }
+
 
                 $prop_count = $package->package->property_limit;
 
@@ -951,6 +969,21 @@ class ApiController extends Controller
                             if ($manufacturerCheck && $modelCheck && $yearRangeCheck && $priceRangeCheck && $citiesCheck && $areasCheck) return true;
                         })->map(function ($interest) use ($property) {
                             $customer = $interest->user_id;
+
+                            $fcm_ids = array();
+                            $fcm_ids[] = $customer->fcm_id;
+                            if (!empty($fcm_ids)) {
+                                $registrationIDs = array_filter($fcm_ids);
+                                $fcmMsg = array(
+                                    'title' => __('New Offer'),
+                                    'message' => "هناك اعلان جديد لاقيها",
+                                    'type' => 'new_offer',
+                                    'body' => 'you have new offer',
+                                    'click_action' => 'RN_NOTIFICATION_CLICK',
+                                    'sound' => 'default',
+                                );
+                                send_push_notification($registrationIDs, $fcmMsg);
+                            }
 
                             Notifications::create([
                                 'title' => __('New Offer'),
@@ -1714,6 +1747,23 @@ class ApiController extends Controller
                             ->find($request->property_id);
                         if (count($Property->customer) > 0) {
 
+                            $_customer = Customer::find($Property->customer[0]->id);
+
+                            $fcm_ids = array();
+                            $fcm_ids[] = $_customer->fcm_id;
+                            if (!empty($fcm_ids)) {
+                                $registrationIDs = array_filter($fcm_ids);
+                                $fcmMsg = array(
+                                    'title' => __('New Offer'),
+                                    'message' => 'عرض جديد لإعلان كيشها',
+                                    'type' => 'new_offer',
+                                    'body' => 'you have new offer',
+                                    'click_action' => 'RN_NOTIFICATION_CLICK',
+                                    'sound' => 'default',
+                                );
+                                send_push_notification($registrationIDs, $fcmMsg);
+                            }
+
                             Notifications::create([
                                 'title' => __('New Offer'),
                                 'message' => 'عرض جديد لإعلان كيشها',
@@ -1725,7 +1775,6 @@ class ApiController extends Controller
                                 'propertys_id' => $Property->id
                             ]);
 
-                            $_customer = Customer::find($Property->customer[0]->id);
 
                             if ($_customer) {
                                 $_customer->increment('unreaded_notifications_count');
