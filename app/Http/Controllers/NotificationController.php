@@ -112,7 +112,7 @@ class NotificationController extends Controller
                             'title' => $request->title,
                             'message' => $request->message,
                             'type' => 'admin_notification',
-                            'body' => 'New Notification',
+                            'body' => $request->message,
                             'click_action' => 'RN_NOTIFICATION_CLICK',
                             'sound' => 'default',
                             'image'=>'https://admin.3jlcom.com/assets/images/logo/logo.png'
