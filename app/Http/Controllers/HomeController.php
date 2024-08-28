@@ -36,13 +36,17 @@ class HomeController extends Controller
      */
     public function index()
     {
+
+        $today = now();
+        $startDate = $today->copy()->startOfMonth();
+        $endDate = $today->copy()->endOfMonth();
+
         if (!has_permissions('read', 'dashboard')) {
             return redirect('dashboard')->with('error', PERMISSION_ERROR_MSG);
         } else {
 
-            $properties = Property::select('id', 'category_id', 'title', 'price', 'title_image', 'latitude', 'longitude', 'city_name')->with('category')->orderBy('price', 'DESC')->limit(10)->get();
+            $properties = Property::select('id', 'category_id', 'title', 'price', 'title_image', 'latitude', 'longitude', 'city_name','created_at','propery_type')->with('category')->orderBy('price', 'DESC')->get();
             $properties_data = Property::select('id', 'title', 'price', 'title_image', 'latitude', 'longitude', 'city_name', 'total_click')->orderBy('total_click', 'DESC')->limit(10)->get();
-
 
             // 0:Sell 1:Rent 2:Sold 3:Rented
             $list['total_sell_property'] = Property::whereHas('category', function ($q) {
@@ -55,6 +59,17 @@ class HomeController extends Controller
                 $q->where('caysh', 1);
             })->get()->count();
 
+            $list['total_sell_property_in_month'] = Property::whereBetween('created_at',[$startDate,$endDate])->whereHas('category', function ($q) {
+                $q->where('category', 'Cars For Sale');
+            })->get()->count();
+            $list['total_rant_property_in_month'] = Property::whereBetween('created_at',[$startDate,$endDate])->whereHas('category', function ($q) {
+                $q->where('category', 'Car Rental');
+            })->get()->count();
+            $list['total_caysh_property_in_month'] = Property::whereBetween('created_at',[$startDate,$endDate])->whereHas('category', function ($q) {
+                $q->where('caysh', 1);
+            })->get()->count();
+
+
 
             $list['total_property_inquiry'] = PropertysInquiry::all()->count();
             $list['total_properties'] = Property::all()->count();
@@ -64,9 +79,6 @@ class HomeController extends Controller
             $list['total_agents'] = Customer::where('role','1')->get()->count();
 
             // =============== NEW =============== //
-            $today = now();
-            $startDate = $today->copy()->startOfMonth();
-            $endDate = $today->copy()->endOfMonth();
 
             $sellproperties = Property::whereHas('category', function ($q) {
                 $q->where('category', 'Cars For Sale');
@@ -134,13 +146,25 @@ class HomeController extends Controller
                     ->groupBy(DB::raw('DAYOFWEEK(created_at)'))
                     ->get();
 
+                $cayshweekpropertyCounts = Property::select(
+                        DB::raw('DAYOFWEEK(created_at) as day_of_week'))
+                    ->whereHas('category',fn($q)=>$q->where('caysh',1))
+                    ->groupBy(DB::raw('DAYOFWEEK(created_at)'))
+                    ->get();
+
                 // Create an array to store the counts for each day of the week
                 $sellweekSeries = array_fill(1, 7, 0);
                 $rentweekSeries = array_fill(1, 7, 0);
+                $cayshweekSeries = array_fill(1, 7, 0);
 
                 foreach ($sellweekpropertyCounts as $count) {
                     $sellweekSeries[$count->day_of_week] = $count->count;
                 }
+
+                foreach ($cayshweekpropertyCounts as $count) {
+                    $cayshweekSeries[$count->day_of_week] = $count->count;
+                }
+
 
                 $rentweekpropertyCounts = DB::table('propertys')
                     ->select(
@@ -161,12 +185,37 @@ class HomeController extends Controller
 
                     $rentweekSeries[$count->day_of_week] = $count->count;
                 }
+
                 $propertiesForDay = $properties->filter(function ($property) use ($day) {
-                    return $day->isSameDay(Carbon::parse($property->created_at));
+                    return $day->between(
+                        Carbon::parse('first day of this month')->subDay(),
+                        Carbon::parse('last day of this month')
+                    ) && $day->isSameDay(Carbon::parse($property->created_at));
                 });
 
-                $countForMonth = $propertiesForDay->count();
-                array_push($sellcountForCurrentDay, $countForMonth);
+                // $countForMonth = $propertiesForDay->count();
+
+                array_push($sellcountForCurrentDay, $propertiesForDay->filter(function ($q) {
+                    $isSell = $q->propery_type == 0;
+                    $isNotCaysh = $q->category->caysh == 0;
+
+                    return $isSell && $isNotCaysh;
+                })->count());
+
+                array_push($rentcountForCurrentDay, $propertiesForDay->filter(function ($q) {
+                    $isRent = $q->propery_type == 1;
+                    $isNotCaysh = $q->category->caysh == 0;
+
+                    return $isRent && $isNotCaysh;
+                })->count());
+
+
+                array_push($cayshcountForCurrentDay, $propertiesForDay->filter(function ($q) {
+                    $isCaysh = $q->category->caysh == 1;
+
+                    return $isCaysh;
+                })->count());
+
                 $currentDates[] = '"' . Carbon::parse($day)->format('Y-m-d') . '"';
             }
 
@@ -180,13 +229,13 @@ class HomeController extends Controller
                 'cayshcountForCurrentDay' => $cayshcountForCurrentDay,
                 'sellweekSeries' => $sellweekSeries,
                 'rentweekSeries' => $rentweekSeries,
-                'cayshweekSeries' => $rentweekSeries,
+                'cayshweekSeries' => $cayshweekSeries,
                 'weekDates' =>  [0 => "'Day1'", 1 => "'Day2'", 2 => "'Day3'", 3 => "'Day4'", 4 => "'Day5'", 5 => "'Day6'", 6 => "'Day7'"],
                 'monthDates' =>  $monthDates,
                 'currentDates' => $currentDates,
                 'currentDate' => "[" . Carbon::now()->format('Y-m-d') . "]"
             ];
-
+            // dd($chartData);
             // Categories Chart
             $get_category = Category::withCount('properties')->where('status','1')->get();
             $category_name = array();

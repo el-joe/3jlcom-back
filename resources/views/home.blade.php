@@ -60,7 +60,7 @@
                     </div>
                 </a>
             </div>
-            
+
             <div class="col-md-3">
                 <a href="{{ url('property') . '?category=13' }}">
                     <div class="das-card">
@@ -80,7 +80,7 @@
             </div>
 
         </div>
-        
+
         <div class="row">
             <div class="col-md-3">
                 <a href="{{ url('categories') }}">
@@ -135,7 +135,7 @@
                     </div>
                 </a>
             </div>
-            
+
             <div class="col-md-3">
                 <a href="{{ url('customer') . '?role=0' }}">
                     <div class="das-card">
@@ -155,7 +155,7 @@
             </div>
 
         </div>
-        
+
         <div class="row">
             <div class="col-md-12">
                 <div class="card proeprty_chart">
@@ -180,48 +180,48 @@
                     <div class="card-body">
                         <div class="row d-flex">
                             <div class="col-md-3 lable_sell d-flex">
-    
+
                                 <div class="des_icon bg1">
                                     <i class="fas fa-car text-white p-3"> </i>
                                 </div>
-    
+
                                 <div class="sell_lable_text">
                                     <div class="total_sell">
                                         {{ __("Total Sale") }}
                                     </div>
                                     <div class="no_of_total_sell">
-                                        {{ $list['total_sell_property'] }} {{ __("Of Cars") }}
+                                        {{ $list['total_sell_property_in_month'] }} {{ __("Of Cars") }}
                                     </div>
                                 </div>
-    
+
                             </div>
                             <div class="col-md-3 lable_rent d-flex">
-                                
+
                                 <div class="des_icon bg1">
                                     <i class="fas fa-car text-white p-3"> </i>
                                 </div>
-                                
+
                                 <div class="rent_lable_text">
                                     <div class="total_sell">
                                         {{ __("Total Caysh") }}
                                     </div>
                                     <div class="no_of_total_sell">
-                                        {{ $list['total_caysh_property'] }} {{ __("Of Cars") }}
+                                        {{ $list['total_caysh_property_in_month'] }} {{ __("Of Cars") }}
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-3 lable_rent d-flex">
-                                
+
                                 <div class="des_icon bg1">
                                     <i class="fas fa-car text-white p-3"> </i>
                                 </div>
-                                
+
                                 <div class="rent_lable_text">
                                     <div class="total_sell">
                                         {{ __("Total Rent") }}
                                     </div>
                                     <div class="no_of_total_sell">
-                                        {{ $list['total_rant_property'] }} {{ __("Of Cars") }}
+                                        {{ $list['total_rant_property_in_month'] }} {{ __("Of Cars") }}
                                     </div>
                                 </div>
                             </div>
@@ -245,16 +245,16 @@
                         <div class="card-body">
                             <div id="pie_chart"></div>
                         </div>
-        
+
                     </div>
 
                 </div>
-                
+
                 <div class="col-md-6">
                     <div class="card most_view">
                         <div class="card-header border-0 pb-0">
                             <h4>{{ __('Most Viewed Properties') }}</h4>
-    
+
                         </div>
                         <div class="card-body">
                             @foreach ($properties_data as $key => $value)
@@ -268,7 +268,7 @@
                                         <div class="font-w600 mb-0">
                                             {{ $value->price }}&nbsp;{{ $settings['currency_symbol'] }}
                                         </div>
-    
+
                                     </div>
                                     <div class="ms-auto">
                                         <div class="view">
@@ -276,7 +276,7 @@
                                             <span class="number">{{ $value->total_click }}</span>
                                         </div>
                                     </div>
-    
+
                                 </div>
                             @endforeach
                         </div>
@@ -294,13 +294,13 @@
 
 @section('script')
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    
+
     <script src="{{ url('assets/js/query-jvectormap-world-mill-en.js') }}"></script>
 
 
     <script>
         var colors = ['red', 'purple', 'black', 'pink', 'orange'];
-        
+
         var options = {
             series:[{{ implode(',', array_values($category_count)) }}],
             chart: {
@@ -310,7 +310,7 @@
             labels:[{!! implode(',', ($category_name)) !!}],
               plotOptions: {
             },
-              
+
             responsive: [{
                 breakpoint: 480,
                 options: {
@@ -336,36 +336,36 @@
                 }
             }
         };
-        
+
         var chart1 = new ApexCharts(document.querySelector("#pie_chart"), options);
         chart1.render();
-        
+
         var myArray =<?php echo json_encode($chartData); ?>;
-        
+
         const data = {
             Monthly: {
                 series1: [{{ implode(',', array_values($chartData['sellmonthSeries'])) }}],
                 series2: [{{ implode(',', array_values($chartData['rentmonthSeries'])) }}],
-                series3: [{{ implode(',', array_values($chartData['rentmonthSeries'])) }}],
+                series3: [{{ implode(',', array_values($chartData['cayshmonthSeries'])) }}],
                 categories: [{!! implode(',', $chartData['monthDates']) !!}],
-            
+
             },
             Weekly: {
                 series1:[{{ implode(',', array_values($chartData['sellweekSeries'])) }}],
                 series2: [{{ implode(',', array_values($chartData['rentweekSeries'])) }}],
-                series3: [{{ implode(',', array_values($chartData['rentweekSeries'])) }}],
+                series3: [{{ implode(',', array_values($chartData['cayshweekSeries'])) }}],
                 categories: [{!! implode(',', $chartData['weekDates']) !!}],
-               
+
             },
             Daily: {
                 series1: [{{ implode(',', array_values($chartData['sellcountForCurrentDay'])) }}],
-                series2: [{{ implode(',', array_values($chartData['sellcountForCurrentDay'])) }}],
-                series3: [{{ implode(',', array_values($chartData['sellcountForCurrentDay'])) }}],
+                series2: [{{ implode(',', array_values($chartData['rentcountForCurrentDay'])) }}],
+                series3: [{{ implode(',', array_values($chartData['cayshcountForCurrentDay'])) }}],
                 categories: [{!! implode(',', $chartData['currentDates']) !!}],
-            
+
             },
         };
-        
+
         var chartData = data['Monthly'];
         var options = {
             series: [
@@ -400,39 +400,39 @@
             },
             colors: ['#EB9D55', '#47BC78'],
         };
-        
+
         var chart = new ApexCharts(document.querySelector("#chart"), options);
         chart.render();
 
         $(document).ready(function(){
-         
+
             $('#tab1').attr('class','active');
             chart.render();
         });
- 
+
         var nestedTabSelect = (tabsElement, currentElement) => {
             const tabs = tabsElement ?? 'ul.tabs';
             const currentClass = currentElement ?? 'active';
-            
+
             document.querySelectorAll(tabs).forEach(function (tabContainer) {
                 let activeLink, activeContent;
                 const links = Array.from(tabContainer.querySelectorAll("a"));
-                
+
                 activeLink =links.find(function (link) {
                     return link.getAttribute("href") === location.hash;
                 }) || links[0];
                 activeLink.classList.add(currentClass);
-                
+
                 activeContent = document.querySelector(activeLink.getAttribute("href"));
                 activeContent.classList.add(currentClass);
-                
+
                 links.forEach(function (link) {
                     if (link !== activeLink) {
                             const content = document.querySelector(link.getAttribute("href"));
                             content.classList.remove(currentClass);
                     }
                 });
-    
+
                 tabContainer.addEventListener("click", function (e) {
                     if (e.target.tagName === "A") {
                         tab=e.target.text;
@@ -446,26 +446,26 @@
                             xaxis:{
                             categories:chartData.categories
                             }
-    
+
                         });
                         // Make the old tab inactive.
                         activeLink.classList.remove(currentClass);
                         activeContent.classList.remove(currentClass);
-    
+
                         // Update the variables with the new link and content.
                         activeLink = e.target;
                         activeContent = document.querySelector(activeLink.getAttribute("href"));
-    
+
                         // Make the tab active.
                         activeLink.classList.add(currentClass);
                         activeContent.classList.add(currentClass);
-    
+
                         e.preventDefault();
                     }
                 });
             });
         };
-        
+
         nestedTabSelect('ul.tabs', 'active');
     </script>
 @endsection
