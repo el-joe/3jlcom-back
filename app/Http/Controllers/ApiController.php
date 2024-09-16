@@ -1020,7 +1020,7 @@ class ApiController extends Controller
                     $response['data'] = $property_details;
                 } else {
                     $response['error'] = false;
-                    $response['message'] = 'Package Limit is over';
+                    $response['message'] = 'تم استهلاك 100% من الباقه الحاليه , الرجاء الاشتراك من جديد!';
                     return response()->json($response,400);
                 }
             }
