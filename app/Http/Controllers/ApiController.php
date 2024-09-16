@@ -2400,7 +2400,7 @@ class ApiController extends Controller
     {
         $date = date('Y-m-d');
         DB::enableQueryLog();
-        $package = Package::where('status', 1)->orderBy('id', 'ASC')->where('price', '!=', 0)->get();
+        $package = Package::where('status', 1)->orderBy('id', 'ASC')/*->where('price', '!=', 0)*/->get();
 
         if (!$package->isEmpty()) {
 
