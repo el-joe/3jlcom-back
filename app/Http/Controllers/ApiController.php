@@ -782,13 +782,13 @@ class ApiController extends Controller
             if (!($package)) {
                 $response['error'] = true;
                 $response['message'] = 'Package not found';
-                return response()->json($response);
+                return response()->json($response,404);
             } else {
 
                 if (!$package->package) {
                     $response['error'] = true;
                     $response['message'] = 'Package not found for add property';
-                    return response()->json($response);
+                    return response()->json($response,404);
                 }
 
                 $executed = RateLimiter::attempt(
@@ -804,7 +804,7 @@ class ApiController extends Controller
                 if (!$executed && $package->package->id == 1) {
                     $response['error'] = true;
                     $response['message'] = 'مسموح بأعلان واحد فقط بالساعه في حاله الباقه المجانيه!';
-                    return response()->json($response);
+                    return response()->json($response,400);
                 }
 
 
@@ -1021,11 +1021,13 @@ class ApiController extends Controller
                 } else {
                     $response['error'] = false;
                     $response['message'] = 'Package Limit is over';
+                    return response()->json($response,400);
                 }
             }
         } else {
             $response['error'] = true;
             $response['message'] = $validator->errors()->first();
+            return response()->json($response,400);
         }
         return response()->json($response);
     }
