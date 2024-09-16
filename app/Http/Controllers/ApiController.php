@@ -800,6 +800,7 @@ class ApiController extends Controller
                     $decayRate = 60*60,
                 );
 
+
                 if (!$executed && $package->package->id == 1) {
                     $response['error'] = true;
                     $response['message'] = 'مسموح بأعلان واحد فقط بالساعه في حاله الباقه المجانيه!';
@@ -807,8 +808,8 @@ class ApiController extends Controller
                 }
 
 
-                $prop_count = $package->package->property_limit;
 
+                $prop_count = $package->package->property_limit;
 
                 $status_settings = Setting::select('data')->where('type', 'require_approval')->first();
                 $config = $status_settings['data'];
@@ -817,7 +818,7 @@ class ApiController extends Controller
                 $config_caysh = $caysh_status_settings['data'];
 
 
-                if (($package->used_limit_for_property) < ($prop_count) || $prop_count != 0) {
+                if (($package->used_limit_for_property) < ($prop_count))  {
 
                     $validator = Validator::make($request->all(), [
                         'category_id' => 'required'
@@ -972,8 +973,10 @@ class ApiController extends Controller
                         })->map(function ($interest) use ($property) {
                             $customer = $interest->user_id;
 
+                            $_customer = Customer::find($customer);
+
                             $fcm_ids = array();
-                            $fcm_ids[] = $customer->fcm_id;
+                            $fcm_ids[] = $_customer->fcm_id;
                             if (!empty($fcm_ids)) {
                                 $registrationIDs = array_filter($fcm_ids);
                                 $fcmMsg = array(
@@ -998,7 +1001,6 @@ class ApiController extends Controller
                                 'propertys_id' => $property->id
                             ]);
 
-                            $_customer = Customer::find($customer);
 
                             if ($_customer) {
                                 $_customer->increment('unreaded_notifications_count');
