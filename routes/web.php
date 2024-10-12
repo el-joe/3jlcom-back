@@ -159,6 +159,11 @@ Route::middleware(['auth', 'checklogin'])->group(function () {
         Route::get('subscription-request/{id}/{status}', [PackageController::class, 'changeRequestStatus']);
 
 
+        Route::get('verification-requests', [CustomersController::class,'verificationRequests']);
+        Route::get('verification_request_list', [CustomersController::class, 'showRequests']);
+        Route::get('verification-request/{id}/{status}', [CustomersController::class, 'changeRequestStatus']);
+
+
         Route::resource('package', PackageController::class);
         Route::get('package_list', [PackageController::class, 'show']);
         Route::post('package-update', [PackageController::class, 'update']);

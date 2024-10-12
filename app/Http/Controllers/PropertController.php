@@ -564,9 +564,9 @@ class PropertController extends Controller
             }
             $operate1 = '<a  id="' . $row->id . '"  class="btn icon btn-primary btn-sm rounded-pill" data-status="' . $row->status . '" data-oldimage="' . $row->image . '" data-types="" data-bs-toggle="modal" data-bs-target="#editModal"  onclick="setValue(this.id);" title="Edit"><i class="bi bi-eye-fill"></i></a>';
 
-            $url = urlencode("https://3jlcom.com/properties-deatils/$row->id");
+            $url = "https://3jlcom.com/properties-deatils/$row->id";
 
-            $operate .= '<a href="#" onclick="copyURL(event,"'. $url .'")" data-code="' . $row->id . '" id="url" class="btn icon btn-secondary btn-sm rounded-pill m-1" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" title="Copy URL"><i class="fa fa-copy"></i></a>';
+            $operate .= '<a href="#" onclick="copyURL(event,\''. $url .'\')" data-code="' . $row->id . '" id="url" class="btn icon btn-secondary btn-sm rounded-pill m-1" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" title="Copy URL"><i class="fa fa-copy"></i></a>';
             // whatsapp anchor with bootstrap icon
             $mobilePlus = substr($row->customer[0]->mobile, 0, 1);
             $plus = ($mobilePlus === '+' ? '' : '+');

@@ -211,7 +211,7 @@
                                 </div>
                                 <div class="col-md-6 form-group  mandatory">
                                     {{ Form::label('longitude', __('Longitude'), ['class' => 'form-label col-12 ']) }}
-                                    {{ Form::number('longitude', '', ['class' => 'form-control', 'placeholder' => __('Longitude') => true, 'id' => 'longitude', 'step' => 'any']) }}
+                                    {{ Form::number('longitude', '', ['class' => 'form-control', 'placeholder' => __('Longitude') , 'id' => 'longitude', 'step' => 'any']) }}
 
                                 </div>
                             </div>

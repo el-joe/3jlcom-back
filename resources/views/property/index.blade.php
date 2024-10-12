@@ -171,8 +171,13 @@
             }
         }
 
-        async function copyURL(event,url) {
-            copyContent(url);
+        function copyURL(event,url) {
+            event.preventDefault();
+            if (window.isSecureContext && navigator.clipboard) {
+                navigator.clipboard.writeText(url);
+            }else {
+                unsecuredCopyToClipboard(url);
+            }
 
             Toastify({
                 text: 'URL Copied successfully',
@@ -181,6 +186,9 @@
                 backgroundColor: "linear-gradient(to right, #6666cc, #1f2e93)"
             }).showToast();
         };
+
+        const unsecuredCopyToClipboard = (text) => { const textArea = document.createElement("textarea"); textArea.value=text; document.body.appendChild(textArea); /*textArea.focus();*/textArea.select(); try{document.execCommand('copy')}catch(err){console.error('Unable to copy to clipboard',err)}document.body.removeChild(textArea)};
+
 
 
         function queryParams(p) {
