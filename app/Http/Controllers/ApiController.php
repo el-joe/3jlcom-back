@@ -51,6 +51,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 use kornrunner\Blurhash\Blurhash;
 use App\Libraries\Paypal;
 use App\Libraries\Paypal_pro;
+use App\Models\AccountVerificationRequest;
 use App\Models\SubscriptionRequest;
 use Exception;
 use Illuminate\Support\Facades\Cache;
@@ -2445,6 +2446,29 @@ class ApiController extends Controller
 
         return response()->json($response);
     }
+
+    public function requestVerification(Request $request)
+    {
+        $customer = Customer::find($request->customer_id);
+
+        if (!$customer) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Custoemr Not Exists'
+            ]);
+        }
+
+        AccountVerificationRequest::firstOrCreate([
+            'customer_id' => $request->customer_id,
+            'status' => 'pending'
+        ]);
+
+        $response['error'] = false;
+        $response['message'] = "Request Sent Successfully!";
+
+        return response()->json($response);
+    }
+
 
     public function user_purchase_package(Request $request)
     {
