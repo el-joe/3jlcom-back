@@ -48,7 +48,7 @@ Route::get('export-pdf/{file}',function ($file) {
     $url = request('url');
 
     if(!$url) return 'Error';
-    dd($url);
+    // dd($url);
     if(!file_exists(public_path('export-pdf'))){
         mkdir(public_path('export-pdf'));
     }
