@@ -31,6 +31,7 @@ use App\Http\Controllers\ReportReasonController;
 use App\Models\Payments;
 use App\Models\PropertysInquiry;
 use Illuminate\Support\Facades\Artisan;
+use Spatie\Browsershot\Browsershot;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,16 @@ use Illuminate\Support\Facades\Artisan;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('export-pdf/{file}',function ($file) {
+    $url = request('url');
+
+    if(!$url) return 'Error';
+
+    Browsershot::url($url)->save('export-pdf/'.$file);
+
+    return url('export-pdf/'.$file);
+});
 
 
 Route::get('/', function () {
