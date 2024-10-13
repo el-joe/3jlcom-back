@@ -53,6 +53,8 @@ Route::get('export-pdf/{file}',function ($file) {
         mkdir(public_path('export-pdf'));
     }
 
+    dd(file_get_contents($url));
+
     Browsershot::url($url)/*->setIncludePath('$PATH:/usr/local/bin')*/->save('export-pdf/'.$file);
 
     return url('export-pdf/'.$file);
