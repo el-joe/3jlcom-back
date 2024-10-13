@@ -49,6 +49,10 @@ Route::get('export-pdf/{file}',function ($file) {
 
     if(!$url) return 'Error';
 
+    if(!file_exists(public_path('export-pdf'))){
+        mkdir(public_path('export-pdf'));
+    }
+
     Browsershot::url($url)/*->setIncludePath('$PATH:/usr/local/bin')*/->save('export-pdf/'.$file);
 
     return url('export-pdf/'.$file);
