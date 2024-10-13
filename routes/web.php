@@ -55,7 +55,7 @@ Route::get('export-pdf/{file}',function ($file) {
 
     // dd();
 
-    Browsershot::html("Hello")/*->setIncludePath('$PATH:/usr/local/bin')*/->save('export-pdf/'.$file);
+    Browsershot::url($url)/*->setIncludePath('$PATH:/usr/local/bin')*/->save(public_path('export-pdf/'.$file));
 
     return url('export-pdf/'.$file);
 });
