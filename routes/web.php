@@ -53,7 +53,7 @@ Route::get('export-pdf/{file}',function ($file) {
         mkdir(public_path('export-pdf'));
     }
 
-    Browsershot::url($url)/*->setIncludePath('$PATH:/usr/local/bin')*/->save('export-pdf/'.$file);
+    Browsershot::url($url)/*->setIncludePath('$PATH:/usr/local/bin')*/->noSandbox()->save('export-pdf/'.$file);
 
     return url('export-pdf/'.$file);
 });
