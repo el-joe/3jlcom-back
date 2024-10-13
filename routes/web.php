@@ -54,7 +54,11 @@ Route::get('export-pdf/{file}',function ($file) {
     }
 
     // dd();
-    Browsershot::html('<h1>Hello world!!</h1>')->save('example.pdf');
+    Browsershot::html('<h1>Hello world!!</h1>')
+    ->addChromiumArguments([
+        'disk-cache-dir' => '~/.cache/puppeteer',
+    ])
+    ->save('example.pdf');
 
     // Browsershot::url($url)/*->setIncludePath('$PATH:/usr/local/bin')*/->save(public_path('export-pdf/'.$file));
 
