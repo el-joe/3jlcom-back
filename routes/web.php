@@ -49,7 +49,7 @@ Route::get('export-pdf/{file}',function ($file) {
 
     if(!$url) return 'Error';
 
-    Browsershot::url($url)->save('export-pdf/'.$file);
+    Browsershot::url($url)->setIncludePath('$PATH:/usr/local/bin')->save('export-pdf/'.$file);
 
     return url('export-pdf/'.$file);
 });
