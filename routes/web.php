@@ -57,7 +57,11 @@ Route::get('export-pdf/{file}',function ($file) {
     // Browsershot::html('<h1>Hello world!!</h1>')
     // ->save('example.pdf');
 
-    Browsershot::url($url."?returnView=1")->showBackground()/*->setIncludePath('$PATH:/usr/local/bin')*/->save(public_path('export-pdf/'.$file));
+    Browsershot::url($url."?returnView=1")
+    // ->emulateMedia('screen')
+    ->showBackground()
+    ->margins(5,5,5,5)
+    ->save(public_path('export-pdf/'.$file));
 
     return url('export-pdf/'.$file);
 });
