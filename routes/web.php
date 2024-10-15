@@ -53,12 +53,8 @@ Route::get('export-pdf/{file}',function ($file) {
         mkdir(public_path('export-pdf'));
     }
 
-    // dd();
-    // Browsershot::html('<h1>Hello world!!</h1>')
-    // ->save('example.pdf');
-
-    Browsershot::url($url."?returnView=1")
-    // ->emulateMedia('screen')
+    Browsershot::url($url."?returnView=1&lang=". request('lang'))
+    // ->emulateMedia('print')
     ->showBackground()
     ->margins(5,5,5,5)
     ->save(public_path('export-pdf/'.$file));
