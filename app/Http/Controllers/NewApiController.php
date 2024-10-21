@@ -31,6 +31,8 @@ class NewApiController extends Controller
     {
         $city = $request->city_id;
 
+        $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
+
         $result = Property::with([
             'customer',
             'user',
@@ -48,6 +50,7 @@ class NewApiController extends Controller
                 $q->where('caysh', 0);
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
+            ->whereNotIn('id',$adv)
             ->orderBy('id', 'DESC')
             ->take(6)
             ->get();
@@ -84,6 +87,8 @@ class NewApiController extends Controller
 
         $user_interest = UserInterest::where('user_id', $current_user)->first();
 
+        $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
+
         $result = Property::with([
             'customer',
             'user',
@@ -100,6 +105,7 @@ class NewApiController extends Controller
             ->whereHas('category', function ($q) use ($request) {
                 $q->where('caysh', 0);
             })
+            ->whereNotIn('id',$adv)
             ->orderBy('id', 'DESC');
 
         if($user_interest){
@@ -181,6 +187,8 @@ class NewApiController extends Controller
     {
         $city = $request->city_id;
 
+        $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
+
         $result = Property::with([
             'customer',
             'user',
@@ -198,6 +206,7 @@ class NewApiController extends Controller
                 $q->where('caysh', 0);
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
+            ->whereNotIn('id',$adv)
             ->where('installment', 1)
             ->orderBy('id', 'DESC')
             ->take(6)
@@ -224,6 +233,8 @@ class NewApiController extends Controller
     {
         $city = $request->city_id;
 
+        $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
+
         $result = Property::with([
             'customer',
             'user',
@@ -240,6 +251,7 @@ class NewApiController extends Controller
             ->whereHas('category', function ($q) use ($request) {
                 $q->where('caysh', 0);
             })
+            ->whereNotIn('id',$adv)
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->orderBy('total_click', 'DESC')
             ->take(6)
@@ -266,6 +278,8 @@ class NewApiController extends Controller
     {
         $city = $request->city_id;
 
+        $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
+
         $result = Property::with([
             'customer',
             'user',
@@ -283,6 +297,7 @@ class NewApiController extends Controller
                 $q->where('caysh', 0);
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
+            ->whereNotIn('id',$adv)
             ->withCount('favourite')
             ->orderBy('favourite_count', 'DESC')
             ->take(6)
@@ -311,6 +326,8 @@ class NewApiController extends Controller
 
         $current_user = $request->current_user;
 
+        $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
+
         if(empty($current_user)){
 
             $response['error'] = false;
@@ -336,6 +353,7 @@ class NewApiController extends Controller
             'advertisement'
         ])
         ->when($city,fn($q)=>$q->where('city_id', $city))
+        ->whereNotIn('id',$adv)
         ->orderBy('id', 'DESC')
         ->take(6);
 
@@ -438,6 +456,8 @@ class NewApiController extends Controller
 
         $newData = [];
 
+        $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
+
         foreach ($categories as $i=>$cat) {
             if((!$current_user_data || $current_user_data->role != 1) && $cat->id == 13){continue;}
             $newData[$i]['id'] = $cat->id;
@@ -456,6 +476,7 @@ class NewApiController extends Controller
                 'advertisement'
             ])
             ->when($city,fn($q)=>$q->where('city_id', $city))
+            ->whereNotIn('id',$adv)
             ->orderBy('id', 'DESC')
             ->where('category_id',$cat->id)
             ->take(6)
