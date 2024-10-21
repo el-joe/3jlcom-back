@@ -61,7 +61,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('get_nearby_properties', [ApiController::class, 'get_nearby_properties']);
 
     Route::post('request_package',[ApiController::class,'requestPacakge']);
-    Route::post('request_verification',[ApiController::class,'requestPacakge']);
+    Route::post('request_verification',[ApiController::class,'requestVerification']);
 
 
     Route::get('get_user_by_id', [ApiController::class, 'get_user_by_id']);
