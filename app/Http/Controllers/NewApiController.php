@@ -524,8 +524,8 @@ class NewApiController extends Controller
 
         $currentPackage = $customer->currentPackage();
 
-        $packagePropertyLimit = $currentPackage?->property_limit ?? 0;
-        $packageAdsLimit = $currentPackage?->advertisement_limit ?? 0;
+        $packagePropertyLimit = $currentPackage?->package?->property_limit ?? 0;
+        $packageAdsLimit = $currentPackage?->package?->advertisement_limit ?? 0;
 
         $usedPackageAdsLimit = $currentPackge?->used_limit_for_property ?? $customer->usedPackageAdsLimit() ?? 0;
         $usedPackagePropertyLimit = $currentPackge?->used_limit_for_advertisement ?? $customer->usedPackagePropertyLimit() ?? 0;
