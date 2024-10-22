@@ -519,7 +519,7 @@ class NewApiController extends Controller
         return $newData;
     }
 
-    function checkAvailable($customer,$type) {
+    function checkAvailable($customer) {
         $customer = Customer::findOrFail($customer);
 
         $currentPackage = $customer->currentPackage();
