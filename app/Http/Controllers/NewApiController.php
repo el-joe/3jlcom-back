@@ -518,4 +518,21 @@ class NewApiController extends Controller
 
         return $newData;
     }
+
+    function checkAvailable($customer,$type) {
+        $customer = Customer::findOrFail($customer);
+
+        $currentPackage = $customer->currentPackage();
+
+        $packagePropertyLimit = $currentPackage?->property_limit ?? 0;
+        $packageAdsLimit = $currentPackage?->advertisement_limit ?? 0;
+
+        $usedPackageAdsLimit = $currentPackge?->used_limit_for_property ?? $customer->usedPackageAdsLimit() ?? 0;
+        $usedPackagePropertyLimit = $currentPackge?->used_limit_for_advertisement ?? $customer->usedPackagePropertyLimit() ?? 0;
+
+        return response()->json([
+            'can_add_property' => $packagePropertyLimit > $usedPackagePropertyLimit,
+            'can_add_ads' => $packageAdsLimit > $usedPackageAdsLimit
+        ]);
+    }
 }

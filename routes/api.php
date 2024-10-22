@@ -48,6 +48,8 @@ Route::get('get_property', [ApiController::class, 'get_property']);
 
 Route::get('app-home',[NewApiController::class, 'appHome']);
 
+Route::get('check-current-package-availability/{customer}',[NewApiController::class, 'checkAvailable']);
+
 Route::post('set_property_total_click', [ApiController::class, 'set_property_total_click']);
 Route::get('get_user_recommendation', [ApiController::class, 'get_user_recommendation']);
 
