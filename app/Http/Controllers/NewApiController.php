@@ -505,7 +505,11 @@ class NewApiController extends Controller
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->whereNotIn('id',$adv)
             ->orderBy('id', 'DESC')
-            ->where('category_id',$cat->id)
+            ->where('category_id',$cat->id);
+
+            $newData[$i]['total'] = $properties->count();
+
+            $properties = $properties
             ->take(6)
             ->get();
 
