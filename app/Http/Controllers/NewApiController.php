@@ -33,7 +33,7 @@ class NewApiController extends Controller
 
         $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
 
-        $result = Property::with([
+        $query = Property::with([
             'customer',
             'user',
             'category:id,category,category_ar,manufacturer,installment,caysh,image',
@@ -51,9 +51,11 @@ class NewApiController extends Controller
             })
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->whereNotIn('id',$adv)
-            ->orderBy('id', 'DESC')
-            ->take(6)
-            ->get();
+            ->orderBy('id', 'DESC');
+
+        $totalCount = $query->count();
+
+        $result = $query->take(6)->get();
 
         if (!$result->isEmpty()) {
             $property_details = get_property_details($result);
@@ -61,13 +63,14 @@ class NewApiController extends Controller
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
             $response['total_clicks'] = 0;
-            $response['total'] = $result->count();
+            $response['total'] = $totalCount;
             $response['data'] = $property_details;
         } else {
 
             $response['error'] = false;
             $response['message'] = "No data found! Is Empty";
             $response['data'] = [];
+            $response['total'] = 0;
         }
         return ($response);
     }
@@ -89,7 +92,7 @@ class NewApiController extends Controller
 
         $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
 
-        $result = Property::with([
+        $query = Property::with([
             'customer',
             'user',
             'category:id,category,category_ar,manufacturer,installment,caysh,image',
@@ -111,25 +114,25 @@ class NewApiController extends Controller
         if($user_interest){
             if ($user_interest->manufacturer_ids != '') {
                 $manufacturer_ids = explode(',', $user_interest->manufacturer_ids);
-                $result = $result->whereIn('manufacturer_id', $manufacturer_ids);
+                $query = $query->whereIn('manufacturer_id', $manufacturer_ids);
             }
 
             if ($user_interest->model_ids != '') {
 
                 $model_ids = explode(',', $user_interest->model_ids);
-                $result = $result->whereIn('model_id', $model_ids);
+                $query = $query->whereIn('model_id', $model_ids);
             }
 
             if ($user_interest->city_ids != '') {
 
                 $city_ids = explode(',', $user_interest->city_ids);
-                $result = $result->whereIn('city_id', $city_ids);
+                $query = $query->whereIn('city_id', $city_ids);
             }
 
             if ($user_interest->area_ids != '') {
 
                 $area_ids = explode(',', $user_interest->area_ids);
-                $result = $result->whereIn('area_id', $area_ids);
+                $query = $query->whereIn('area_id', $area_ids);
             }
 
             if ($user_interest->year_range != '') {
@@ -139,7 +142,7 @@ class NewApiController extends Controller
 
                 if (isset($max_year) && isset($min_year)) {
 
-                    $result = $result->where(function ($query) use ($min_year, $max_year) {
+                    $query = $query->where(function ($query) use ($min_year, $max_year) {
                         $query->whereRaw("CAST(price AS DECIMAL(10, 2)) >= ?", [$min_year])
                             ->whereRaw("CAST(price AS DECIMAL(10, 2)) <= ?", [$max_year]);
                     });
@@ -155,14 +158,17 @@ class NewApiController extends Controller
                     $min_price = floatval($min_price);
                     $max_price = floatval($max_price);
 
-                    $result = $result->where(function ($query) use ($min_price, $max_price) {
+                    $query = $query->where(function ($query) use ($min_price, $max_price) {
                         $query->whereRaw("CAST(price AS DECIMAL(10, 2)) >= ?", [$min_price])
                             ->whereRaw("CAST(price AS DECIMAL(10, 2)) <= ?", [$max_price]);
                     });
                 }
             }
         }
-        $result = $result
+
+        $totalCount = $query->count();
+
+        $result = $query
             ->take(6)
             ->get();
 
@@ -172,13 +178,14 @@ class NewApiController extends Controller
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
             $response['total_clicks'] = 0;
-            $response['total'] = $result->count();
+            $response['total'] = $totalCount;
             $response['data'] = $property_details;
         } else {
 
             $response['error'] = false;
             $response['message'] = "No data found! Is Empty";
             $response['data'] = [];
+            $response['total'] = 0;
         }
         return ($response);
     }
@@ -189,7 +196,7 @@ class NewApiController extends Controller
 
         $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
 
-        $result = Property::with([
+        $query = Property::with([
             'customer',
             'user',
             'category:id,category,category_ar,manufacturer,installment,caysh,image',
@@ -208,8 +215,12 @@ class NewApiController extends Controller
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->whereNotIn('id',$adv)
             ->where('installment', 1)
-            ->orderBy('id', 'DESC')
-            ->take(6)
+            ->orderBy('id', 'DESC');
+
+
+        $totalCount = $query->count();
+
+        $result = $query->take(6)
             ->get();
 
         if (!$result->isEmpty()) {
@@ -218,13 +229,14 @@ class NewApiController extends Controller
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
             $response['total_clicks'] = 0;
-            $response['total'] = $result->count();
+            $response['total'] = $totalCount;
             $response['data'] = $property_details;
         } else {
 
             $response['error'] = false;
             $response['message'] = "No data found! Is Empty";
             $response['data'] = [];
+            $response['total'] = 0;
         }
         return ($response);
     }
@@ -235,7 +247,7 @@ class NewApiController extends Controller
 
         $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
 
-        $result = Property::with([
+        $query = Property::with([
             'customer',
             'user',
             'category:id,category,category_ar,manufacturer,installment,caysh,image',
@@ -253,8 +265,12 @@ class NewApiController extends Controller
             })
             ->whereNotIn('id',$adv)
             ->when($city,fn($q)=>$q->where('city_id', $city))
-            ->orderBy('total_click', 'DESC')
-            ->take(6)
+            ->orderBy('total_click', 'DESC');
+
+
+        $totalCount = $query->count();
+
+        $result = $query->take(6)
             ->get();
 
         if (!$result->isEmpty()) {
@@ -263,13 +279,14 @@ class NewApiController extends Controller
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
             $response['total_clicks'] = 0;
-            $response['total'] = $result->count();
+            $response['total'] = $totalCount;
             $response['data'] = $property_details;
         } else {
 
             $response['error'] = false;
             $response['message'] = "No data found! Is Empty";
             $response['data'] = [];
+            $response['total'] = 0;
         }
         return ($response);
     }
@@ -280,7 +297,7 @@ class NewApiController extends Controller
 
         $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get()->pluck('property_id');
 
-        $result = Property::with([
+        $query = Property::with([
             'customer',
             'user',
             'category:id,category,category_ar,manufacturer,installment,caysh,image',
@@ -299,8 +316,11 @@ class NewApiController extends Controller
             ->when($city,fn($q)=>$q->where('city_id', $city))
             ->whereNotIn('id',$adv)
             ->withCount('favourite')
-            ->orderBy('favourite_count', 'DESC')
-            ->take(6)
+            ->orderBy('favourite_count', 'DESC');
+
+        $totalCount = $query->count();
+
+        $result = $query->take(6)
             ->get();
 
         if (!$result->isEmpty()) {
@@ -309,13 +329,14 @@ class NewApiController extends Controller
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
             $response['total_clicks'] = 0;
-            $response['total'] = $result->count();
+            $response['total'] = $totalCount;
             $response['data'] = $property_details;
         } else {
 
             $response['error'] = false;
             $response['message'] = "No data found! Is Empty";
             $response['data'] = [];
+            $response['total'] = 0;
         }
         return ($response);
     }
@@ -339,7 +360,7 @@ class NewApiController extends Controller
 
         $current_user_data = Customer::where('id', $current_user)->first();
 
-        $result = Property::with([
+        $query = Property::with([
             'customer',
             'user',
             'category:id,category,category_ar,manufacturer,installment,caysh,image',
@@ -354,12 +375,12 @@ class NewApiController extends Controller
         ])
         ->when($city,fn($q)=>$q->where('city_id', $city))
         ->whereNotIn('id',$adv)
-        ->orderBy('id', 'DESC')
-        ->take(6);
+        ->orderBy('id', 'DESC');
+
 
         if (isset($request->current_user) && $request->current_user != null) {
             if ($current_user_data->role == 1) {
-                $result = $result->whereHas('category', function ($q) {
+                $query = $query->whereHas('category', function ($q) {
                     $q->where('caysh', 1);
                 });
             } else {
@@ -374,8 +395,9 @@ class NewApiController extends Controller
             $response['data'] = [];
             return ($response);
         }
+        $totalCount = $query->count();
 
-        $result = $result->get();
+        $result = $query->take(6)->get();
 
         if (!$result->isEmpty()) {
             $property_details = get_property_details($result);
@@ -383,13 +405,14 @@ class NewApiController extends Controller
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
             $response['total_clicks'] = 0;
-            $response['total'] = $result->count();
+            $response['total'] = $totalCount;
             $response['data'] = $property_details;
         } else {
 
             $response['error'] = false;
             $response['message'] = "No data found! Is Empty";
             $response['data'] = [];
+            $response['total'] = 0;
         }
         return ($response);
     }
@@ -398,7 +421,7 @@ class NewApiController extends Controller
     {
         $city = $request->city_id;
 
-        $result = Property::with([
+        $query = Property::with([
             'customer',
             'user',
             'category:id,category,category_ar,manufacturer,installment,caysh,image',
@@ -413,8 +436,7 @@ class NewApiController extends Controller
         ])
             ->whereHas('category')
             ->when($city,fn($q)=>$q->where('city_id', $city))
-            ->orderBy('id', 'DESC')
-            ->take(6);
+            ->orderBy('id', 'DESC');
 
 
         $adv = Advertisement::select('property_id')->where('is_enable', 1)->where('status', 0)->get();
@@ -425,7 +447,11 @@ class NewApiController extends Controller
             array_push($ad_arr, $ad->property_id);
         }
 
-        $result = $result->whereIn('id', $ad_arr)->get();
+        $query = $query->whereIn('id', $ad_arr);
+
+        $totalCount = $query->count();
+
+        $result = $query->take(6)->get();
 
 
         if (!$result->isEmpty()) {
@@ -434,13 +460,14 @@ class NewApiController extends Controller
             $response['error'] = false;
             $response['message'] = "Data Fetch Successfully";
             $response['total_clicks'] = 0;
-            $response['total'] = $result->count();
+            $response['total'] = $totalCount;
             $response['data'] = $property_details;
         } else {
 
             $response['error'] = false;
             $response['message'] = "No data found! Is Empty";
             $response['data'] = [];
+            $response['total'] = 0;
         }
         return ($response);
     }
