@@ -164,6 +164,8 @@ class NewApiController extends Controller
                     });
                 }
             }
+        }else{
+            $query = $query->whereId(0);
         }
 
         $totalCount = $query->count();
